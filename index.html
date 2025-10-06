@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Terrapoint</title>
+	<!-- page icon -->
+	<link rel="icon" type="image/png" href="./img/icon.png" />
+
+	<!-- import from bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+		crossorigin="anonymous"></script>
+
+	<!-- import CSS -->
+	<link rel="stylesheet" href="./css/style.css" />
+</head>
+<!-- NAVBAR -->
+<header>
+	<nav class="navbar navbar-expand-lg">
+		<div class="container-xxl">
+			<!-- Logo + texto -->
+			<a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+				<img src="./img/logo.png" alt="Logo Terrapoint" width="100" height="80"
+					class="d-inline-block align-text-top">
+				<span class="fw-bold">TERRAPOINT</span>
+			</a>
+
+			<!-- Botón hamburguesa -->
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<!-- Enlaces -->
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<div class="navbar-nav ms-auto align-items-lg-center">
+					<a class="nav-link active" aria-current="page" href="index.html" data-i18n="nav.inicio">Inicio</a>
+					<a class="nav-link" href="#mapa" data-i18n="nav.mapa">Mapa</a>
+					<a class="nav-link" href="#datos" data-i18n="nav.datos">Datos</a>
+					<a class="nav-link" href="#comunidad" data-i18n="nav.comunidad">Comunidad</a>
+					<a class="btn btn-gradient ms-lg-3 mt-2 mt-lg-0" href="iniciar-sesion.html"
+						data-i18n="nav.login">Iniciar sesión</a>
+					<a class="btn btn-orange ms-lg-2 mt-2 mt-lg-0" href="registrarse.html"
+						data-i18n="nav.signup">Registrarse</a>
+					<div class="ms-lg-3 mt-2 mt-lg-0">
+						<!-- Custom language dropdown with flags -->
+						<div class="dropdown">
+							<button id="lang-dropdown-toggle"
+								class="btn btn-light btn-sm d-flex align-items-center dropdown-toggle" type="button"
+								data-bs-toggle="dropdown" aria-expanded="false">
+								<img id="lang-dropdown-flag" src="./img/BanderaEN.svg.png" alt="EN" width="18"
+									height="12" class="me-2" />
+								<span id="lang-dropdown-label">EN</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li>
+									<a href="#" class="dropdown-item d-flex align-items-center lang-item"
+										data-lang="en">
+										<img src="./img/BanderaEN.svg.png" alt="EN" width="18" height="12"
+											class="me-2" />
+										<span>EN</span>
+									</a>
+								</li>
+								<li>
+									<a href="#" class="dropdown-item d-flex align-items-center lang-item"
+										data-lang="es">
+										<img src="./img/BanderaES.svg.png" alt="ES" width="18" height="12"
+											class="me-2" />
+										<span>ES</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+</header>
+
+<!-- HERO SECCIÓN -->
+<main>
+	<section class="hero d-flex align-items-center text-center">
+		<div class="container">
+			<h1 class="hero-title" data-i18n="hero.title">Monitoreo ambiental con datos satelitales</h1>
+			<p class="hero-subtitle" data-i18n="hero.subtitle">
+				Visualiza mapas en vivo de contaminación, calidad del aire y
+				ecosistemas gracias a datos de la NASA. Únete a la lucha por un
+				planeta sostenible con precisión basada en tecnología avanzada.
+			</p>
+			<div class="d-flex justify-content-center gap-3 mt-4">
+				<a href="#mapa" class="btn btn-gradient btn-lg" data-i18n="hero.btn.map">Explore map</a>
+				<a href="recompensas.html" class="btn btn-orange btn-lg" data-i18n="hero.btn.game">Rewards</a>
+			</div>
+		</div>
+	</section>
+</main>
+
+<!-- MAPA SECCIÓN -->
+<section id="mapa" class="map-section py-5">
+	<div class="container">
+		<div class="text-center mb-5">
+			<h2 class="map-title" data-i18n="map.title">Mapa Satelital Interactivo</h2>
+			<p class="map-subtitle" data-i18n="map.subtitle">
+				Utilizando datos precisos de la NASA para mostrar zonas de alta
+				contaminación y áreas verdes en tiempo real.
+			</p>
+		</div>
+
+		<div class="row justify-content-center">
+			<div class="col-lg-10">
+				<!-- Mapa interactivo -->
+				<div class="mb-3">
+					<input type="text" id="direccion" class="form-control mb-2" data-i18n="map.input"
+						placeholder="Ej: Av Industrial D 21, Chimbote" />
+					<button onclick="buscarDireccion()" class="btn btn-secondary" data-i18n="map.searchBtn">
+						Buscar
+					</button>
+				</div>
+
+				<div class="mb-3">
+					<label for="tipoContaminacion" data-i18n="map.select.label">Tipo de contaminación:</label>
+					<select id="tipoContaminacion" class="form-select" style="max-width: 300px">
+						<option value="aire" data-i18n="map.option.air">Aire</option>
+						<option value="basura" data-i18n="map.option.trash">Basura</option>
+						<option value="ruido" data-i18n="map.option.noise">Ruido</option>
+						<option value="agua" data-i18n="map.option.water">Agua</option>
+						<option value="otros" data-i18n="map.option.other">Otros</option>
+					</select>
+					<button class="btn btn-primary mt-2" onclick="guardarContaminacion()" data-i18n="map.saveBtn">
+						Guardar
+					</button>
+				</div>
+
+				<div id="map" style="height: 400px;" class="map-container mb-4"></div>
+
+				<div id="leyenda" class="mt-3">
+					<div class="d-flex flex-wrap justify-content-center gap-3">
+						<span class="badge rounded-pill px-4 py-3 fs-5" style="background-color: red;"
+							data-i18n="map.legend.air">Aire</span>
+						<span class="badge rounded-pill px-4 py-3 fs-5" style="background-color: green;"
+							data-i18n="map.legend.trash">Basura</span>
+						<span class="badge rounded-pill px-4 py-3 fs-5" style="background-color: orange;"
+							data-i18n="map.legend.noise">Ruido</span>
+						<span class="badge rounded-pill px-4 py-3 fs-5" style="background-color: blue;"
+							data-i18n="map.legend.water">Agua</span>
+						<span class="badge rounded-pill px-4 py-3 fs-5" style="background-color: purple;"
+							data-i18n="map.legend.other">Otros</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Leaflet JS & CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Script del mapa -->
+<script>
+	// Crear el mapa centrado en Nuevo Chimbote
+	const map = L.map("map").setView([-9.1188, -78.5275], 13);
+
+	// Capa base de OpenStreetMap
+	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: "© OpenStreetMap contributors",
+	}).addTo(map);
+
+	let marcador = null; // Marcador de dirección
+	let ultimaCoordenada = null; // Guarda la última coordenada buscada
+
+	// Buscar dirección con Nominatim
+	function buscarDireccion() {
+		const direccion = document.getElementById("direccion").value;
+
+		fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.length > 0) {
+					const lat = parseFloat(data[0].lat);
+					const lon = parseFloat(data[0].lon);
+					ultimaCoordenada = [lat, lon];
+
+					map.setView(ultimaCoordenada, 16);
+
+					if (marcador) map.removeLayer(marcador);
+
+					marcador = L.marker(ultimaCoordenada)
+						.addTo(map)
+						.bindPopup(`Dirección encontrada:<br>${direccion}<br><b>Lat:</b> ${lat}<br><b>Lon:</b> ${lon}`)
+						.openPopup();
+				} else {
+					alert("Dirección no encontrada, verifica la dirección");
+				}
+			})
+			.catch((err) => {
+				console.error("Error al geocodificar:", err);
+				alert("Hubo un problema al buscar la dirección.");
+			});
+	}
+
+	// Guardar punto de contaminación
+	function guardarContaminacion() {
+		const tipo = document.getElementById("tipoContaminacion").value;
+
+		if (!ultimaCoordenada) {
+			alert("Primero busca una dirección para marcar.");
+			return;
+		}
+
+		const colores = {
+			aire: "red",
+			basura: "green",
+			ruido: "orange",
+			agua: "blue",
+			otros: "purple",
+		};
+
+		const color = colores[tipo] || "gray";
+
+		// Dibujar el círculo base
+		const circulo = L.circle(ultimaCoordenada, {
+			color: color,
+			fillColor: color,
+			fillOpacity: 0.5,
+			radius: 100,
+		}).addTo(map);
+
+		circulo.bindPopup(`Tipo de contaminación: <b>${tipo}</b>`).openPopup();
+
+		// Si es aire, agregar polígono de dispersión
+		if (tipo === "aire") {
+			const [lat, lon] = ultimaCoordenada;
+			const deltaLat = 0.0015;
+			const deltaLon = 0.001;
+
+			const puntosTrapecio = [
+				[lat, lon - deltaLon],
+				[lat, lon + deltaLon],
+				[lat + deltaLat, lon + deltaLon * 1.5],
+				[lat + deltaLat, lon - deltaLon * 1.5],
+			];
+
+			const poligono = L.polygon(puntosTrapecio, {
+				color: color,
+				fillColor: color,
+				fillOpacity: 0.3,
+			}).addTo(map);
+
+			poligono.bindPopup(`Dispersión de aire contaminado`).openPopup();
+		}
+	}
+</script>
+<!-- FIN SECCIÓN MAPA -->
+<!-- SECCIÓN CALIDAD DEL AIRE -->
+<section id="datos" class="air-quality py-5">
+	<div class="container text-center">
+		<div class="row g-4">
+			<!-- Card 1 -->
+			<div class="col-12 col-md-6 col-lg-3">
+				<div class="card air-card p-4">
+					<h3 class="mb-4" data-i18n="air.card1.title">Calidad del Aire</h3>
+					<div class="circle mb-3">
+						<span>75%</span>
+					</div>
+					<h5 data-i18n="air.card1.status">Buena</h5>
+					<p class="small" data-i18n="air.card1.small">
+						Basado en PM2.5, NO2 y O3 <br />
+						(Datos simulados acorde a estándares de la EPA)
+					</p>
+					<p class="extra-text" data-i18n="air.card1.extra">
+						La calidad del aire es saludable para la población general.
+					</p>
+				</div>
+			</div>
+
+			<!-- Card 2 -->
+			<div class="col-12 col-md-6 col-lg-3">
+				<div class="card air-card p-4">
+					<h3 class="mb-4" data-i18n="air.card2.title">Contaminación</h3>
+					<div class="circle mb-3">
+						<span>40%</span>
+					</div>
+					<h5 data-i18n="air.card2.status">Alta</h5>
+					<p class="small" data-i18n="air.card2.small">
+						Alta - Niveles elevados de CO2 y <br />
+						partículas PM10.
+					</p>
+					<p class="extra-text" data-i18n="air.card2.extra">
+						Puede haber riesgos para personas sensibles.
+					</p>
+				</div>
+			</div>
+
+			<!-- Card 3 -->
+			<div class="col-12 col-md-6 col-lg-3">
+				<div class="card air-card p-4">
+					<h3 class="mb-4" data-i18n="air.card3.title">Zonas verdes</h3>
+					<div class="circle mb-3">
+						<span>60%</span>
+					</div>
+					<h5 data-i18n="air.card3.status">Saludable</h5>
+					<p class="small" data-i18n="air.card3.small">
+						Saludables - Aumento en <br />
+						vegetación detectado por NDVI.
+					</p>
+					<p class="extra-text" data-i18n="air.card3.extra">
+						Recomendado limitar actividades al aire libre.
+					</p>
+				</div>
+			</div>
+
+			<!-- Card 4 -->
+			<div class="col-12 col-md-6 col-lg-3">
+				<div class="card air-card p-4">
+					<h3 class="mb-4" data-i18n="air.card4.title">Temperatura global</h3>
+					<div class="circle mb-3">
+						<span>55%</span>
+					</div>
+					<h5 data-i18n="air.card4.status">Aumentando</h5>
+					<p class="small" data-i18n="air.card4.small">
+						Aumentando - Comparado con <br />
+						1970s (Anomalía térmica).
+					</p>
+					<p class="extra-text" data-i18n="air.card4.extra">
+						La exposición prolongada puede ser peligrosa.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- SECCIÓN COMENTARIOS -->
+<section id="comunidad" class="community-comments py-5">
+	<div class="container text-center">
+		<h2 class="section-title" data-i18n="community.title">Comentarios de la Comunidad</h2>
+		<p class="section-subtitle" data-i18n="community.subtitle">
+			Escucha cómo EcoStellar está cambiando vidas con datos precisos y
+			acciones reales.
+		</p>
+
+		<div class="row mt-4">
+			<!-- Card 1 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card comment-card p-4 h-100 shadow">
+					<div class="quote-mark">“</div>
+					<p class="comment-text" data-i18n="community.card1.text">
+						Terrapoint me ayudó a entender la contaminación en mi ciudad. ¡He
+						reducido mi huella ecológica gracias a sus datos precisos de la
+						NASA!
+					</p>
+					<p class="comment-author" data-i18n="community.card1.author">- Ana L., Ciudadana, Madrid</p>
+				</div>
+			</div>
+
+			<!-- Card 2 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card comment-card p-4 h-100 shadow">
+					<div class="quote-mark">“</div>
+					<p class="comment-text" data-i18n="community.card2.text">
+						Participando en la gamificación, mi comunidad plantó 500 árboles.
+						Los mapas satelitales nos guiaron perfectamente.
+					</p>
+					<p class="comment-author" data-i18n="community.card2.author">- Juan P., Activista, Bogotá</p>
+				</div>
+			</div>
+
+			<!-- Card 3 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card comment-card p-4 h-100 shadow">
+					<div class="quote-mark">“</div>
+					<p class="comment-text" data-i18n="community.card3.text">
+						La precisión con datos satelitales de la NASA es asombrosa.
+						Terrapoint es mi aliada en sostenibilidad, con métricas reales.
+					</p>
+					<p class="comment-author" data-i18n="community.card3.author">- Maria S., Científica, Santiago</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- SECCIÓN RECURSOS AMBIENTALES -->
+<section class="environment-resources py-5">
+	<div class="container text-center">
+		<h2 class="section-title" data-i18n="resources.title">Recursos Ambientales</h2>
+		<p class="section-subtitle" data-i18n="resources.subtitle">
+			Aprende más sobre el medio ambiente con artículos precisos basados en
+			ciencia.
+		</p>
+
+		<div class="row mt-4">
+			<!-- Card 1 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card env-card h-100 shadow">
+					<img src="./img/cambio climático.png" class="card-img-top" alt="Cambio Climático" />
+					<div class="card-body">
+						<h5 class="card-title" data-i18n="resources.card1.title">Cambio Climático</h5>
+						<p class="card-text" data-i18n="resources.card1.text">
+							Descubre los impactos del cambio climático en los ecosistemas,
+							con datos de temperatura global.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Card 2 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card env-card h-100 shadow">
+					<img src="./img/Clidad de aire.png" class="card-img-top" alt="Calidad del Aire" />
+					<div class="card-body">
+						<h5 class="card-title" data-i18n="resources.card2.title">Calidad del Aire</h5>
+						<p class="card-text" data-i18n="resources.card2.text">
+							Monitorea partículas PM2.5 y gases tóxicos con índices precisos
+							como AQI.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Card 3 -->
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card env-card h-100 shadow">
+					<img src="./img/protección de ecosistemas.png" class="card-img-top"
+						alt="Protección de Ecosistemas" />
+					<div class="card-body">
+						<h5 class="card-title" data-i18n="resources.card3.title">Protección de Ecosistemas</h5>
+						<p class="card-text" data-i18n="resources.card3.text">
+							Estrategias para preservar biodiversidad y zonas verdes mediante
+							datos satelitales.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="gamification-section">
+	<div class="container">
+		<h2 class="section-title" data-i18n="gamification.title">Gamificación y Recompensas</h2>
+		<p class="section-subtitle" data-i18n="gamification.subtitle">
+			Gana puntos limpiando zonas contaminadas, formando comunidades y
+			completando retos ecológicos. ¡Cada acción cuenta con precisión!
+		</p>
+
+		<div class="row g-4">
+			<!-- Card 1 -->
+			<div class="col-md-4">
+				<div class="gamification-card">
+					<img src="./img/1.png" alt="Acciones Ecológicas" />
+					<h5 class="card-title" data-i18n="gam.card1.title">Acciones Ecológicas</h5>
+					<p class="card-text" data-i18n="gam.card1.text">
+						Registra limpiezas y plantaciones para puntos basados en impacto
+						real.
+					</p>
+				</div>
+			</div>
+
+			<!-- Card 2 -->
+			<div class="col-md-4">
+				<div class="gamification-card">
+					<img src="./img/2.png" alt="Comunidades" />
+					<h5 class="card-title" data-i18n="gam.card2.title">Comunidades</h5>
+					<p class="card-text" data-i18n="gam.card2.text">
+						Únete o crea grupos para desafíos colaborativos con métricas
+						precisas.
+					</p>
+				</div>
+			</div>
+
+			<!-- Card 3 -->
+			<div class="col-md-4">
+				<div class="gamification-card">
+					<img src="./img/1.png" alt="Certificados" />
+					<h5 class="card-title" data-i18n="gam.card3.title">Certificados</h5>
+					<p class="card-text" data-i18n="gam.card3.text">
+						Obtén credenciales digitales por logros validados por datos
+						satelitales.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- SECCIÓN PREMIOS Y NIVELES -->
+<section class="py-5" id="premios">
+	<div class="container text-center">
+		<h2 class="section-title" data-i18n="levels.title">Premios y Niveles</h2>
+		<p class="section-subtitle" data-i18n="levels.subtitle">
+			Súmate a la gamificación: avanza de nivel y desbloquea insignias, certificados y reconocimientos.
+		</p>
+
+		<div class="row g-4 mt-2">
+			<!-- Nivel 1 -->
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100 shadow border-0">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center gap-2 mb-2">
+							<span class="badge bg-success" data-i18n="levels.1.badge">Nivel 1</span>
+							<strong data-i18n="levels.1.name">Ecoamigable</strong>
+						</div>
+						<p class="small text-muted mb-3" data-i18n="levels.1.desc">Tu primer paso hacia la acción
+							ambiental.</p>
+						<ul class="text-start small m-0 p-0" style="list-style:none">
+							<li data-i18n="levels.1.item1">Insignia Ecoamigable</li>
+							<li data-i18n="levels.1.item2">Certificado de participación</li>
+							<li data-i18n="levels.1.item3">Tips ecológicos</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Nivel 2 -->
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100 shadow border-0">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center gap-2 mb-2">
+							<span class="badge bg-primary" data-i18n="levels.2.badge">Nivel 2</span>
+							<strong data-i18n="levels.2.name">Colaborador</strong>
+						</div>
+						<p class="small text-muted mb-3" data-i18n="levels.2.desc">Participa en comunidades y suma
+							reportes.</p>
+						<ul class="text-start small m-0 p-0" style="list-style:none">
+							<li data-i18n="levels.2.item1">Insignia Colaborador</li>
+							<li data-i18n="levels.2.item2">Jornadas comunitarias</li>
+							<li data-i18n="levels.2.item3">Plantón o semillas</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Nivel 3 -->
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100 shadow border-0">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center gap-2 mb-2">
+							<span class="badge bg-success-subtle text-success border" data-i18n="levels.3.badge">Nivel
+								3</span>
+							<strong data-i18n="levels.3.name">Guardián Verde</strong>
+						</div>
+						<p class="small text-muted mb-3" data-i18n="levels.3.desc">Reportes verificados y voluntariado.
+						</p>
+						<ul class="text-start small m-0 p-0" style="list-style:none">
+							<li data-i18n="levels.3.item1">Insignia Guardián Verde</li>
+							<li data-i18n="levels.3.item2">Certificado municipal</li>
+							<li data-i18n="levels.3.item3">Kit ambiental</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Nivel 4 -->
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100 shadow border-0">
+					<div class="card-body p-4">
+						<div class="d-flex align-items-center gap-2 mb-2">
+							<span class="badge bg-info" data-i18n="levels.4.badge">Nivel 4</span>
+							<strong data-i18n="levels.4.name">Héroe Ambiental</strong>
+						</div>
+						<p class="small text-muted mb-3" data-i18n="levels.4.desc">Liderazgo e impacto sostenido.</p>
+						<ul class="text-start small m-0 p-0" style="list-style:none">
+							<li data-i18n="levels.4.item1">Insignia Héroe</li>
+							<li data-i18n="levels.4.item2">Reconocimiento oficial</li>
+							<li data-i18n="levels.4.item3">Plantones adicionales</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mt-4">
+			<a href="recompensas.html" class="btn btn-gradient" data-i18n="levels.see.rewards">Ver detalles de
+				recompensas</a>
+		</div>
+	</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer-section text-center">
+	<div class="row align-items-center">
+
+		<!-- Columna izquierda: Imagen -->
+		<div class="col-lg-3 text-center mb-4 mb-lg-0">
+			<img src="./img/footer.png" alt="Astronauta" class="footer-img">
+		</div>
+
+		<!-- Columna central: Acceso rápido -->
+		<div class="col-lg-6 mb-4 mb-lg-0">
+			<h3 class="footer-form-title text-center" data-i18n="footer.form.title">Contacta con Terrapoint</h3>
+			<div class="d-flex justify-content-center gap-2 mt-2">
+				<a class="btn btn-gradient" href="iniciar-sesion.html" data-i18n="nav.login">Iniciar sesión</a>
+				<a class="btn btn-orange" href="registrarse.html" data-i18n="nav.signup">Registrarse</a>
+			</div>
+
+			<!-- Redes sociales -->
+			<div class="footer-social mt-4">
+				<a href="#">FB</a>
+				<a href="#">TW</a>
+				<a href="#">IG</a>
+				<a href="#">LI</a>
+			</div>
+		</div>
+
+		<!-- Columna derecha: Texto CTA -->
+		<div class="col-lg-3 text-center">
+			<h3 class="footer-cta" data-i18n="footer.cta">Vuélvete un aliado ambiental...</h3>
+		</div>
+
+		<!-- Créditos -->
+		<div class="footer-bottom mt-5">
+			<p data-i18n="footer.credits"> 2025 Terrapoint — Salvemos el planeta con datos precisos.</p>
+		</div>
+</footer>
+<!-- Idioma: carga después del DOM -->
+<script src="./js-Idioma/IndexIdioma.js"></script>
+</body>
+
+</html>

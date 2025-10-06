@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión | Terrapoint</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg panel-header">
+    <div class="container-xxl">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img src="../img/logo.png" alt="Logo Terrapoint" width="100" height="80" class="d-inline-block align-text-top">
+          <span class="fw-bold">TERRAPOINT</span>
+        </a>
+      <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
+        <a class="btn btn-orange" href="registrarse.html" data-i18n="login.nav.signup_link">¿No tienes cuenta? Regístrate</a>
+        <a class="btn btn-outline-light-custom" href="index.html" data-i18n="login.nav.back_home">Volver al inicio</a>
+        <!-- Language dropdown with flags -->
+        <div class="ms-lg-3 mt-2 mt-lg-0">
+            <button id="lang-dropdown-toggle" class="btn btn-light btn-sm d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img id="lang-dropdown-flag" src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+              <span id="lang-dropdown-label">EN</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="en">
+                  <img src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                  <span>EN</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="es">
+                  <img src="../img/BanderaES.svg.png" alt="ES" width="18" height="12" class="me-2" />
+                  <span>ES</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="auth-wrap py-5 py-lg-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-7">
+          <div class="card auth-card">
+            <div class="card-body p-4 p-lg-5 form-styled">
+              <h1 class="h3 mb-4" data-i18n="login.title">Iniciar sesión</h1>
+              <form id="loginForm" class="row g-3" novalidate>
+                <div class="col-12">
+                  <label class="form-label" for="loginEmail" data-i18n="login.email.label">Correo</label>
+                  <input id="loginEmail" type="email" class="form-control" placeholder="correo@ejemplo.com" data-i18n="login.email.placeholder" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="loginPassword" data-i18n="login.password.label">Contraseña</label>
+                  <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" data-i18n="login.password.placeholder" />
+                </div>
+                <div class="col-12 d-flex gap-2 align-items-center">
+                  <button type="submit" class="btn btn-gradient" data-i18n="login.submit">Iniciar sesión</button>
+                  <a class="btn btn-outline-secondary" href="registrarse.html" data-i18n="login.signup_link">¿No tienes cuenta? Regístrate</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="../javaScript/auth.js"></script>
+  <script src="../js-Idioma/LoginIdioma.js"></script>
+</body>
+</html>

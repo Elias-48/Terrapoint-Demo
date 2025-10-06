@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuario | Terrapoint</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark panel-header">
+    <div class="container-xxl">
+      <a class="navbar-brand d-flex align-items-center gap-2 text-white" href="index.html">
+        <img src="../img/logo.png" alt="Logo" width="100" height="80" class="d-inline-block align-text-top" />
+        <span class="fw-bold">TERRAPOINT</span>
+      </a>
+      <!-- Botón hamburguesa -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar" aria-controls="userNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menú colapsable -->
+      <div class="collapse navbar-collapse" id="userNavbar">
+        <div class="navbar-nav ms-auto align-items-lg-center gap-2">
+          <span class="nav-link text-white fw-semibold d-none d-lg-inline" data-i18n="user.nav.greeting">Hola, Elías Rivera</span>
+          <a class="nav-link text-white" href="index.html" data-i18n="user.nav.logout">Salir</a>
+          <!-- Language dropdown with flags -->
+          <div class="ms-lg-3">
+            <div class="dropdown">
+              <button id="lang-dropdown-toggle" class="btn btn-light btn-sm d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img id="lang-dropdown-flag" src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                <span id="lang-dropdown-label">EN</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="en">
+                    <img src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                    <span>EN</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="es">
+                    <img src="../img/BanderaES.svg.png" alt="ES" width="18" height="12" class="me-2" />
+                    <span>ES</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Saludo destacado en móvil, fuera del encabezado -->
+  <div class="container d-block d-lg-none py-2 text-center">
+    <span class="fw-semibold fs-4" data-i18n="user.nav.greeting">Hola, Elías Rivera</span>
+  </div>
+
+  <main class="py-4">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Perfil -->
+        <div class="col-lg-4">
+          <div class="card profile-card p-3">
+            <div class="card-body">
+              <h5 class="card-title" data-i18n="user.profile.title">Tu perfil</h5>
+              <div class="text-center my-3">
+                <img id="profilePreview" src="../img/1.png" alt="Perfil" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" data-i18n="user.profile.upload.label">Subir nueva foto</label>
+                <!-- Hidden native file input -->
+                <input id="profileUpload" type="file" class="form-control d-none" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp" />
+                <!-- Custom control: button + status -->
+                <div class="d-flex align-items-center gap-2">
+                  <button id="profileUploadBtn" type="button" class="btn btn-outline-secondary btn-sm" data-i18n="user.file.select_button">Select file</button>
+                  <small id="profileUploadStatus" class="text-muted" data-i18n="user.file.no_file">No file selected</small>
+                  <!-- Hidden template holder for selected text -->
+                  <span id="profileUploadSelectedTemplate" hidden data-i18n="user.file.selected">Selected: {name}</span>
+                </div>
+                <div class="form-text" data-i18n="user.profile.upload.help">Formatos permitidos: JPG, JPEG, PNG, GIF, WEBP. Máx. 5 MB.</div>
+                <!-- Nivel actual debajo de la tarjeta de perfil -->
+                <div class="mt-2">
+                  <span class="badge bg-success" data-i18n="user.nav.level">Nivel 2 · Colaborador</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Reporte -->
+        <div class="col-lg-8">
+          <div class="card report-card">
+            <div class="card-body p-4">
+              <h5 class="card-title mb-3" data-i18n="user.report.title">Reporte de contaminación</h5>
+              <form id="reportForm" class="row g-3">
+                <div class="col-12">
+                  <label class="form-label" data-i18n="user.report.desc.label">Descripción del hecho</label>
+                  <textarea id="reportDesc" class="form-control" rows="3" placeholder="Describe lo que ocurrió..." data-i18n="user.report.desc.placeholder"></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" data-i18n="user.report.loc.label">Ubicación / dirección exacta</label>
+                  <input id="reportLoc" type="text" class="form-control" placeholder="Calle, número, ciudad" data-i18n="user.report.loc.placeholder" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="reportType" data-i18n="user.report.type.label">Tipo de contaminación</label>
+                  <select id="reportType" class="form-select">
+                    <option value="" selected data-i18n="user.report.type.placeholder">Selecciona una opción...</option>
+                    <option value="aire" data-i18n="user.report.type.air">Aire (humo de quema, polvo, olor fuerte, humo de vehículos)</option>
+                    <option value="basura" data-i18n="user.report.type.trash">Basura (bolsas tiradas, escombros, montón de residuos)</option>
+                    <option value="ruido" data-i18n="user.report.type.noise">Ruido (música muy alta, maquinaria, bocinas, construcción)</option>
+                    <option value="agua" data-i18n="user.report.type.water">Agua (color extraño, mal olor, espuma, aceite en la superficie)</option>
+                    <option value="otro" data-i18n="user.report.type.other">Otro (describe el caso)</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" data-i18n="user.report.photo.label">Evidencia fotográfica</label>
+                  <!-- Hidden native file input for report evidence -->
+                  <input id="reportPhoto" type="file" class="form-control d-none" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp" />
+                  <div class="d-flex align-items-center gap-2">
+                    <button id="reportPhotoBtn" type="button" class="btn btn-outline-secondary btn-sm" data-i18n="user.file.select_button">Select file</button>
+                    <small id="reportPhotoStatus" class="text-muted" data-i18n="user.file.no_file">No file selected</small>
+                    <span id="reportPhotoSelectedTemplate" hidden data-i18n="user.file.selected">Selected: {name}</span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-gradient" data-i18n="user.report.submit">Enviar</button>
+                </div>
+              </form>
+              <div id="reportAlert" class="alert alert-warning d-none mt-3" role="alert"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAPA PRINCIPAL DEL USUARIO -->
+      <section class="map-section py-4">
+        <div class="text-center mb-4">
+          <h2 class="map-title" data-i18n="user.map.title">Mapa Satelital</h2>
+          <p class="map-subtitle" data-i18n="user.map.subtitle">Vista principal del mapa para tus reportes y exploración de tu zona.</p>
+        </div>
+        <div id="user-map" class="map-container">
+          <span class="map-placeholder">[ MAPA AQUÍ ]</span>
+        </div>
+      </section>
+
+      <div class="row g-4">
+        <!-- Chat -->
+        <div class="col-lg-6">
+          <div class="card chat-card">
+            <div class="card-body p-4">
+              <h5 class="card-title mb-3" data-i18n="user.chat.title">Comunicación con moderador</h5>
+              <div class="border rounded p-3 mb-3" style="height:200px; overflow:auto; background:#f8f9fa;">
+                <p class="small text-muted mb-1" data-i18n="user.chat.sample.meta">Moderador · 10:20</p>
+                <div class="p-2 rounded bg-light" data-i18n="user.chat.sample.text">Hola, cuéntanos sobre tu reporte.</div>
+              </div>
+              <div class="msg-stack">
+                <input type="text" class="form-control" placeholder="Escribe un mensaje..." data-i18n="user.chat.input" />
+                <button class="btn btn-orange mt-2" type="button" data-i18n="user.chat.send">Enviar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Novedades -->
+        <div class="col-lg-6">
+          <div class="card news-card">
+            <div class="card-body p-4">
+              <h5 class="card-title mb-3" data-i18n="user.news.title">Novedades</h5>
+              <div class="card mb-3">
+                <img src="../img/2.png" class="card-img-top" alt="Noticia" />
+                <div class="card-body">
+                  <h6 class="card-title" data-i18n="user.news.card1.title">Limpieza comunitaria este fin de semana</h6>
+                  <p class="card-text small text-muted" data-i18n="user.news.card1.text">Únete a la jornada de limpieza en el parque central. Trae guantes y bolsas reutilizables.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="../javaScript/usuario.js"></script>
+  <script src="../js-Idioma/UsuarioIdioma.js"></script>
+  <script src="../javaScript/fileInputEnhancer.js"></script>
+  <script>
+    (function(){
+      function wireFileControl(inputId, btnId, statusId, tplId){
+        const input = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        const status = document.getElementById(statusId);
+        const tplEl = document.getElementById(tplId);
+        if (!input || !btn || !status || !tplEl) return;
+        btn.addEventListener('click', function(){ input.click(); });
+        input.addEventListener('change', function(){
+          const files = input.files;
+          if (!files || files.length === 0){
+            status.setAttribute('data-i18n','user.file.no_file');
+            // If UsuarioIdioma is active, it will re-apply text on lang change; keep a fallback now
+            const fallback = (document.documentElement.lang === 'es') ? 'Ningún archivo seleccionado' : 'No file selected';
+            status.textContent = fallback;
+          } else {
+            const tpl = tplEl.textContent || 'Selected: {name}';
+            const name = files.length === 1 ? files[0].name : files.length + ' files';
+            status.textContent = tpl.replace('{name}', name);
+            status.removeAttribute('data-i18n');
+          }
+        });
+      }
+      function init(){
+        wireFileControl('profileUpload','profileUploadBtn','profileUploadStatus','profileUploadSelectedTemplate');
+        wireFileControl('reportPhoto','reportPhotoBtn','reportPhotoStatus','reportPhotoSelectedTemplate');
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    })();
+  </script>
+</body>
+</html>

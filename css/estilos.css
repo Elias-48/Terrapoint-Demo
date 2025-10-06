@@ -1,0 +1,298 @@
+/* Estilos adicionales para paneles y login */
+:root{
+  --verde:#27AE60;
+  --azul:#3498DB;
+  --morado:#8e44ad;
+  --naranja:#F39C12;
+}
+
+/* Evitar recorte/scroll horizontal inesperado */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* =======================
+   Moderador: Barra lateral de chat fija
+   ======================= */
+.chat-sidebar {
+  position: fixed;
+  top: 0; /* se ajusta dinámicamente vía JS */
+  left: 0;
+  width: 320px;
+  height: 100vh; /* se ajusta dinámicamente vía JS */
+  background: #fff;
+  border-right: 1px solid #dee2e6;
+  z-index: 1000; /* debajo de navbars fijas Bootstrap (1030) */
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+@media (min-width: 992px) {
+  .content-with-sidebar {
+    margin-left: 320px;
+  }
+}
+
+/* =======================
+   Tablas panel admin: más separación entre columnas
+   ======================= */
+/* Aumenta padding horizontal de celdas en todas las tablas dentro del panel */
+.admin-panel .table > :not(caption) > * > * {
+  padding-left: 1rem;   /* antes ~0.5rem */
+  padding-right: 1rem;  /* antes ~0.5rem */
+}
+/* En móviles, un poco más de aire vertical también ayuda a la lectura */
+@media (max-width: 576px) {
+  .admin-panel .table > :not(caption) > * > * {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .content-with-sidebar {
+    margin-left: 0 !important;
+  }
+}
+
+/* Móvil: oculto como drawer por defecto */
+@media (max-width: 991.98px) {
+  .chat-sidebar {
+    width: 85vw;                    /* ancho cómodo en móvil */
+    transform: translateX(-100%);   /* fuera de pantalla por defecto */
+    box-shadow: none;
+    pointer-events: none;           /* no captura clics cuando está cerrado */
+  }
+  .chat-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    pointer-events: auto;           /* habilita interacción al abrir */
+  }
+}
+
+/* Overlay para móvil */
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+.chat-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Bloquear scroll de fondo cuando el drawer está abierto */
+body.no-scroll {
+  overflow: hidden;
+}
+
+/********* Navbar variantes *********/
+.navbar.panel-header{
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+}
+
+/********* Tarjetas *********/
+.card.profile-card,.card.report-card,.card.chat-card,.card.news-card,.card.map-card,.card.messages-card{
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+
+/********* Botones util *********/
+.btn-outline-light-custom{
+  border:1px solid rgba(255,255,255,.6);
+  color:#fff;
+}
+.btn-outline-light-custom:hover{ background: rgba(255,255,255,.1); }
+
+/********* Página de autenticación *********/
+.auth-hero{ background: linear-gradient(104.82deg, var(--azul) 0%, var(--verde) 100%); color:#fff; }
+.auth-card{ border:none; border-radius:16px; box-shadow:0 10px 24px rgba(0,0,0,.12); }
+
+/********* Moderador *********/
+.moderador-theme{ background: linear-gradient(93.09deg, var(--morado) 0%, var(--azul) 100%); color:#fff; }
+.map-sim{ height: 320px; background:#e9ecef; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:700; color:#6c757d; }
+
+/********* Utilidades *********/
+.rounded-12{ border-radius:12px; }
+.shadow-soft{ box-shadow:0 10px 22px rgba(0,0,0,.08); }
+
+/* =======================
+   PÁGINA INICIO-REGISTRO (AUTH)
+   ======================= */
+.auth-wrap{ min-height: 100vh; display:flex; align-items:center; background:linear-gradient(104.82deg,#3498DB 0%,#2ECC71 100%); }
+.auth-card{ border:none; border-radius:20px; box-shadow:0 18px 40px rgba(0,0,0,.18); overflow:hidden; }
+.auth-aside{ background:rgba(255,255,255,.08); color:#fff; backdrop-filter: blur(6px); display: flex; align-items: flex-start; justify-content: flex-start; }
+.auth-aside img{ width:100%; max-width:220px; height:auto; }
+
+/* Imagen astronauta más pequeña y centrada en móviles */
+@media (max-width: 576px){
+  .auth-aside img{ max-width:90px; margin:8px 0 0 0; display:block; }
+  /* Override vertical centering for login section on phones */
+  .auth-wrap{
+    min-height: auto;          /* don't force full viewport height */
+    display: block;            /* remove flex that centers vertically */
+    align-items: initial;      /* reset alignment */
+  }
+}
+
+/* =======================
+   PANEL USUARIO / MODERADOR
+   ======================= */
+/* Navbar con degradado base para paneles */
+.panel-header{ background: linear-gradient(93.09deg, #2ECC71 0%, #3498DB 100%); color:#fff; }
+/* Tema moderador (degradado morado-azul) */
+.moderador-theme{ background: linear-gradient(93.09deg, #8e44ad 0%, #3498DB 100%); color:#fff; }
+
+/* Tarjetas comunes */
+.profile-card, .report-card, .chat-card, .news-card, .map-card, .messages-card{
+  border: none; border-radius: 16px; box-shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+
+/* Formularios estilo contacto (aplicado a login/registro) */
+.form-styled .form-control{
+  border-radius: 10px;
+  border: none;
+  padding: 0.75rem;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.form-styled .btn{
+  border-radius: 10px;
+}
+
+/* Unificar altura y alineación de input + botón en cajas de mensajes */
+.msg-input-group{ display: flex; align-items: stretch; }
+.msg-input-group .form-control,
+.msg-input-group .btn{
+  box-sizing: border-box;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.375rem 0.75rem;
+  height: calc(1.5em + 0.75rem + 2px); /* altura exacta de Bootstrap */
+}
+.msg-input-group .btn{
+  display: flex;
+  align-items: center;
+  margin: 0;                /* quita margen global de .btn para juntar al input */
+  border: 1px solid #ced4da; /* igual que el input */
+  align-self: stretch;       /* estirar botón a la misma altura del input */
+  height: auto;              /* permitir estiramiento */
+}
+/* Unir bordes entre input y botón */
+.msg-input-group .form-control{
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0; /* evitar doble borde en la unión */
+}
+.msg-input-group .btn{
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0; /* evitar doble borde en la unión */
+}
+
+/* Variante apilada: input arriba y botón abajo, ambos centrados */
+.msg-stack{ max-width: 720px; margin: 0 auto; }
+.msg-stack .form-control{ width: 100%; }
+.msg-stack .btn{ width: auto; margin: 0.5rem auto 0; display: block; }
+/* Desactivar el efecto de escala en hover dentro del input-group para no desalinear */
+.msg-input-group .btn:hover{
+  transform: none !important;
+}
+
+.footer-bottom {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #bdc3c7;
+}
+
+/* Horizontal scroll container for cards (like reportes recibidos) */
+.h-scroll-cards{
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 5px 0 12px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.h-scroll-cards > *{
+  flex: 0 0 auto;              /* do not shrink */
+  scroll-snap-align: start;
+}
+.h-scroll-cards .card{
+  width: 250px;                 /* similar ancho a tarjetas de reportes */
+}
+
+/* =======================
+   FIX: Outline buttons visibility (override global .btn)
+   ======================= */
+.btn-outline-danger {
+  background: transparent !important;
+  color: #dc3545 !important;
+  border: 1px solid #dc3545 !important;
+}
+.btn-outline-secondary {
+  background: transparent !important;
+  color: #6c757d !important;
+  border: 1px solid #6c757d !important;
+}
+.btn-outline-danger:hover {
+  background: #dc3545 !important;
+  color: #fff !important;
+}
+.btn-outline-secondary:hover {
+  background: #6c757d !important;
+  color: #fff !important;
+}
+
+/* Moderador: Imágenes de tarjetas con tamaño uniforme */
+#pane-news .card-img-top,
+#pane-resources .card-img-top,
+#pane-gam .card-img-top {
+  width: 100%;
+  height: 180px;           /* ajusta si deseas otro alto */
+  object-fit: cover;       /* recorta para mantener proporción */
+  object-position: center; /* centra el recorte */
+  display: block;
+}
+
+/* Moderador: unificar también imágenes de tarjetas fuera de las pestañas (ej: Reportes recibidos) */
+.navbar.moderador-theme ~ main .card-img-top {
+  width: 100%;
+  height: 180px;           /* mismo alto para todas las tarjetas */
+  object-fit: cover;       /* recorta manteniendo proporción */
+  object-position: center; /* centro del recorte */
+  display: block;
+}
+
+/* Mejoras de scroll en chat */
+#chatMessages {
+  overscroll-behavior: contain;
+}
+
+/* Reportes: botones responsivos en móvil */
+@media (max-width: 576px) {
+  /* Chat: input + botón apilados y compactos */
+  #chatConvWrap .msg-input-group{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #chatConvWrap .msg-input-group .form-control{
+    margin: 0 0 .5rem 0;
+    border-right: 1px solid #ced4da;        /* restaurar borde al apilar */
+    border-top-right-radius: .375rem;       /* restaurar radios */
+    border-bottom-right-radius: .375rem;
+  }
+  #chatConvWrap .msg-input-group .btn{
+    width: 100%;
+    margin: 0;                              /* override margen global de .btn */
+    padding: .5rem .75rem;                  /* más compacto */
+    font-size: .9rem;                       /* texto un poco más pequeño */
+    border-left: 1px solid #ced4da;         /* restaurar borde al apilar */
+    border-top-left-radius: .375rem;        /* restaurar radios */
+    border-bottom-left-radius: .375rem;
+  }
+}

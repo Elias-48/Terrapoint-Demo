@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERRAPOINT - Plataforma Ambiental </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/language-switcher.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --eco-green: #2ecc71;
+            --eco-blue: #3498db;
+            --eco-white: #ffffff;
+            --eco-dark: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f8fafc;
+            color: #2c3e50;
+        }
+        
+        .eco-bg-green { background-color: var(--eco-green); }
+        .eco-bg-blue { background-color: var(--eco-blue); }
+        .eco-text-green { color: var(--eco-green); }
+        .eco-text-blue { color: var(--eco-blue); }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--eco-green);
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--eco-green), var(--eco-blue));
+            color: white;
+        }
+        
+        #map {
+            height: 500px;
+            border-radius: 8px;
+            z-index: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 15px;
+            height: 15px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            position: relative;
+        }
+        
+        .marker-cluster-small {
+            background-color: rgba(46, 204, 113, 0.6);
+        }
+        
+        .marker-cluster-small div {
+            background-color: rgba(46, 204, 113, 0.8);
+            color: white;
+        }
+        
+        .leaflet-popup-content {
+            margin: 15px;
+        }
+        
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            #map {
+                height: 350px;
+            }
+            
+            .desktop-only {
+                display: none;
+            }
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--eco-green), var(--eco-blue));
+            border-radius: 3px;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--eco-green), var(--eco-blue));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            z-index: 90;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold eco-text-green flex items-center">
+                    <span class="mr-2"><i class="fas fa-earth-americas"></i></span> TERRAPOINT
+                </h1>
+            </div>
+            
+            <nav class="hidden md:flex space-x-6">
+                <a href="#inicio" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Inicio</a>
+                <a href="#reportar" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Reportar</a>
+                <a href="#comunidad" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Comunidades</a>
+                <a href="#ranking" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Ranking</a>
+                <a href="#autoridades" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Autoridades</a>
+<a href="recompensas.html" target="_blank" class="eco-text-blue hover:eco-text-green font-medium transition-colors">Recompensas</a>
+            </nav>
+            
+            <div class="flex items-center space-x-4 header-actions">
+                <!-- Language Switcher will be inserted here by language-switcher.js -->
+                <button id="notification-btn" class="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span class="notification-dot hidden" id="notification-indicator"></span>
+                </button>
+                
+                <div class="relative">
+                    <button id="profile-btn" class="flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 hover:bg-gray-200 transition-colors">
+                        <span class="text-sm font-medium" id="user-level">Nivel 1</span>
+                        <span class="level-badge" id="user-points">0 pts</span>
+                    </button>
+                    
+                    <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i> Mi Perfil</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i> Configuración</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+                
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#inicio" class="eco-text-blue font-medium py-2"><i class="fas fa-home mr-2"></i> Inicio</a>
+                <a href="#reportar" class="eco-text-blue font-medium py-2"><i class="fas fa-plus-circle mr-2"></i> Reportar</a>
+                <a href="#comunidad" class="eco-text-blue font-medium py-2"><i class="fas fa-users mr-2"></i> Comunidad</a>
+                <a href="#ranking" class="eco-text-blue font-medium py-2"><i class="fas fa-trophy mr-2"></i> Ranking</a>
+                <a href="#autoridades" class="eco-text-blue font-medium py-2"><i class="fas fa-building mr-2"></i> Autoridades</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section id="inicio" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold eco-text-green mb-4">Mapa Ambiental en Tiempo Real</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Visualiza y reporta problemas ambientales en tu comunidad. Juntos podemos hacer reducir la contaminación.</p>
+            </div>
+            
+            <!-- Map Container -->
+            <div class="card p-4 md:p-6 mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                    <h3 class="text-xl font-semibold eco-text-green">Reportes Activos</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="map-filter" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none">
+                            <option value="all">Todos los reportes</option>
+                            <option value="trash">Basura</option>
+                            <option value="air">Calidad del Aire</option>
+                            <option value="water">Contaminación del Agua</option>
+                            <option value="noise">Ruido</option>
+                            <option value="deforestation">Deforestación</option>
+                        </select>
+                        <button id="refresh-map" class="bg-eco-blue text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors">Actualizar</button>
+                    </div>
+                </div>
+                
+                <div id="map"></div>
+                
+                <div id="map-legend" class="mt-4 flex flex-wrap gap-4 text-sm">
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 bg-red-500 rounded-full mr-2"></span>
+                        <span>Contaminación crítica</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 bg-yellow-500 rounded-full mr-2"></span>
+                        <span>Contaminación moderada</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                        <span>Zonas verdes</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 bg-blue-500 rounded-full mr-2"></span>
+                        <span>Reportes ciudadanos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card p-6 text-center">
+                    <div class="text-4xl font-bold eco-text-green mb-2" id="total-reports">128</div>
+                    <div class="text-gray-600">Reportes Activos</div>
+                </div>
+                
+                <div class="card p-6 text-center">
+                    <div class="text-4xl font-bold eco-text-blue mb-2" id="community-members">564</div>
+                    <div class="text-gray-600">Miembros de la Comunidad</div>
+                </div>
+                
+                <div class="card p-6 text-center">
+                    <div class="text-4xl font-bold text-yellow-500 mb-2" id="solved-cases">89</div>
+                    <div class="text-gray-600">Casos Resueltos</div>
+                </div>
+            </div>
+            
+            <!-- User Progress -->
+            <div class="card p-6 mb-8">
+                <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Tu Progreso Ambiental</h3>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium" id="user-level-text">Nivel 1: Ecoamigable</span>
+                        <span class="text-sm text-gray-600" id="points-text">50 pts para siguiente nivel</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="level-progress" style="width: 30%"></div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl eco-text-green mb-1"><i class="fas fa-trash"></i></div>
+                        <div class="font-semibold" id="reports-count">5</div>
+                        <div class="text-xs text-gray-600">Reportes</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl eco-text-blue mb-1"><i class="fas fa-check-circle"></i></div>
+                        <div class="font-semibold" id="validations-count">3</div>
+                        <div class="text-xs text-gray-600">Validaciones</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                        <div class="text-2xl text-yellow-500 mb-1"><i class="fas fa-users"></i></div>
+                        <div class="font-semibold" id="communities-count">2</div>
+                        <div class="text-xs text-gray-600">Comunidades</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-2xl text-purple-500 mb-1"><i class="fas fa-trophy"></i></div>
+                        <div class="font-semibold" id="badges-count">1</div>
+                        <div class="text-xs text-gray-600">Insignias</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Report Section -->
+        <section id="reportar" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold eco-text-green mb-4">Reportar Contaminación</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Ayuda a identificar problemas ambientales en tu comunidad reportándolos.</p>
+            </div>
+            
+            <div class="card p-6">
+                <form id="report-form" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Contaminación</label>
+                        <select class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="trash">Basura</option>
+                            <option value="air">Calidad del Aire</option>
+                            <option value="water">Contaminación del Agua</option>
+                            <option value="noise">Contaminación Acústica</option>
+                            <option value="deforestation">Deforestación</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                        <textarea class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" rows="4" placeholder="Describe el problema en detalle..." required></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
+                        <div class="flex space-x-4">
+                            <input type="text" class="flex-1 border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="Latitud" required>
+                            <input type="text" class="flex-1 border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="Longitud" required>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Haz clic en el mapa para obtener coordenadas automáticamente</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto (Opcional)</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-2"></i>
+                                    <p class="text-sm text-gray-500">Haz clic para subir una foto</p>
+                                </div>
+                                <input type="file" class="hidden" accept="image/*">
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-eco-green text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2"></i> Enviar Reporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Community Section -->
+        <section id="comunidad" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold eco-text-green mb-4">Comunidad Ambiental</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Únete a comunidades locales y participa en acciones colectivas.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Comunidades Activas</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                            <div class="bg-green-100 rounded-full p-3 mr-4">
+                                <i class="fas fa-tree text-green-600 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Reforestación Chimbote</h4>
+                                <p class="text-sm text-gray-600">245 miembros • 12 acciones activas</p>
+                            </div>
+                            <button class="bg-eco-blue text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">Unirse</button>
+                        </div>
+                        
+                        <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                            <div class="bg-blue-100 rounded-full p-3 mr-4">
+                                <i class="fas fa-water text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Limpieza de Ríos</h4>
+                                <p class="text-sm text-gray-600">189 miembros • 8 acciones activas</p>
+                            </div>
+                            <button class="bg-eco-blue text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">Unirse</button>
+                        </div>
+                        
+                        <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                            <div class="bg-yellow-100 rounded-full p-3 mr-4">
+                                <i class="fas fa-recycle text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Reciclaje Chimbote</h4>
+                                <p class="text-sm text-gray-600">312 miembros • 15 acciones activas</p>
+                            </div>
+                            <button class="bg-eco-blue text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">Unirse</button>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-6 border border-eco-green text-eco-green py-2 px-4 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+                        Ver todas las comunidades
+                    </button>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Retos Activos</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 rounded-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold">Recolecta 10 kg de plástico</h4>
+                                <span class="level-badge">+20 pts</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Contribuye a reducir la contaminación por plásticos en tu comunidad.</p>
+                            <div class="progress-bar mb-2">
+                                <div class="progress-fill" style="width: 40%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600">4/10 kg completado</p>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold">Planta 5 árboles</h4>
+                                <span class="level-badge">+30 pts</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Ayuda a reforestar áreas urbanas y mejorar la calidad del aire.</p>
+                            <div class="progress-bar mb-2">
+                                <div class="progress-fill" style="width: 20%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600">1/5 árboles plantados</p>
+                        </div>
+                        
+                        <div class="p-4 bg-yellow-50 rounded-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold">Reporta 3 focos de contaminación</h4>
+                                <span class="level-badge">+15 pts</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Identifica y reporta problemas ambientales en tu zona.</p>
+                            <div class="progress-bar mb-2">
+                                <div class="progress-fill" style="width: 66%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600">2/3 reportes completados</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-6 border border-eco-blue text-eco-blue py-2 px-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Ver todos los retos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Tus Insignias</h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-white border border-gray-200 rounded-lg">
+                        <div class="badge-icon bg-green-100 text-green-600 mx-auto mb-2">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h4 class="font-semibold text-sm mb-1">Ecoamigable</h4>
+                        <p class="text-xs text-gray-600">Primer reporte</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-white border border-gray-200 rounded-lg opacity-40">
+                        <div class="badge-icon bg-blue-100 text-blue-600 mx-auto mb-2">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h4 class="font-semibold text-sm mb-1">Colaborador Ambiental</h4>
+                        <p class="text-xs text-gray-600">Unirse a comunidad</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-white border border-gray-200 rounded-lg opacity-40">
+                        <div class="badge-icon bg-yellow-100 text-yellow-600 mx-auto mb-2">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h4 class="font-semibold text-sm mb-1">Guardían Verde</h4>
+                        <p class="text-xs text-gray-600">10 reportes verificados</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-white border border-gray-200 rounded-lg opacity-40">
+                        <div class="badge-icon bg-purple-100 text-purple-600 mx-auto mb-2">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h4 class="font-semibold text-sm mb-1">Héroe Ambiental</h4>
+                        <p class="text-xs text-gray-600">Nivel 5 alcanzado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Ranking Section -->
+        <section id="ranking" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold eco-text-green mb-4">Ranking Ambiental</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Descubre a los usuarios más activos en la protección ambiental.</p>
+            </div>
+            
+            <div class="card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold eco-text-green section-title">Top Contribuidores</h3>
+                    
+                    <select class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        <option>Global</option>
+                        <option>Perú</option>
+                        <option>Santa</option>
+                        <option>Chimbote</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-500 mr-4">1</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Ana García</h4>
+                            <p class="text-sm text-gray-600">Nivel 5 • Ecoglobal</p>
+                        </div>
+                        <div class="text-lg font-bold eco-text-green">1245 pts</div>
+                    </div>
+                    
+                    <div class="flex items-center p-4 bg-white rounded-lg">
+                        <div class="text-2xl font-bold text-gray-500 mr-4">2</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Carlos Mendoza</h4>
+                            <p class="text-sm text-gray-600">Nivel 4 • Ecolocal</p>
+                        </div>
+                        <div class="text-lg font-bold eco-text-green">987 pts</div>
+                    </div>
+                    
+                    <div class="flex items-center p-4 bg-white rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-700 mr-4">3</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Laura Hernández</h4>
+                            <p class="text-sm text-gray-600">Nivel 4 • Ecolocal</p>
+                        </div>
+                        <div class="text-lg font-bold eco-text-green">856 pts</div>
+                    </div>
+                    
+                    <div class="flex items-center p-4 bg-white rounded-lg">
+                        <div class="text-xl font-bold text-gray-600 mr-4">4</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Miguel Torres</h4>
+                            <p class="text-sm text-gray-600">Nivel 3 • Ecoestable</p>
+                        </div>
+                        <div class="text-lg font-bold eco-text-green">723 pts</div>
+                    </div>
+                    
+                    <div class="flex items-center p-4 bg-white rounded-lg">
+                        <div class="text-xl font-bold text-gray-600 mr-4">5</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold">Sofia Ramírez</h4>
+                            <p class="text-sm text-gray-600">Nivel 3 • Ecoestable</p>
+                        </div>
+                        <div class="text-lg font-bold eco-text-green">689 pts</div>
+                    </div>
+                </div>
+                
+                <button class="w-full mt-6 border border-eco-green text-eco-green py-2 px-4 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+                    Ver ranking completo
+                </button>
+            </div>
+            
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold eco-text-green mb-6 section-title">Estadísticas de Impacto</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <canvas id="impact-chart" height="250"></canvas>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-semibold mb-2">Progreso Mensual</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Reportes realizados</span>
+                                    <span class="font-semibold">48</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-2">Proyectos Completados</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Limpieza de playas</span>
+                                    <span class="font-semibold">12</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-2">Reducción de CO2 (ton)</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Meta comunitaria</span>
+                                    <span class="font-semibold">120/200</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Authorities Section -->
+        <section id="autoridades" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold eco-text-green mb-4">Panel de Autoridades</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Herramientas para que las autoridades gestionen los reportes ambientales.</p>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                <div class="flex items-start">
+                    <div class="bg-blue-100 rounded-full p-3 mr-4">
+                        <i class="fas fa-exclamation-triangle text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-800 mb-2">2 Alertas de Contaminación Crítica</h3>
+                        <p class="text-blue-700">Se han detectado niveles peligrosos de contaminación en Iztapalapa y Tlalnepantla.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Reportes por Validar</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start p-4 border border-gray-200 rounded-lg">
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Acumulación de basura en Plaza de Armas</h4>
+                                <p class="text-sm text-gray-600">Reportado por: Johny_Silva • Hace 2 horas</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-eco-green text-white p-2 rounded-full hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start p-4 border border-gray-200 rounded-lg">
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Vertido de químicos en Río Santa</h4>
+                                <p class="text-sm text-gray-600">Reportado por: RichardGuerrero • Hace 5 horas</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-eco-green text-white p-2 rounded-full hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start p-4 border border-gray-200 rounded-lg">
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Emisiones industriales excesivas</h4>
+                                <p class="text-sm text-gray-600">Reportado por: GreenMonitor • Hace 1 día</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-eco-green text-white p-2 rounded-full hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-6 border border-eco-blue text-eco-blue py-2 px-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Ver todos los reportes
+                    </button>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Estadísticas de Contaminación</h3>
+                    
+                    <div class="mb-6">
+                        <canvas id="pollution-chart" height="200"></canvas>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Reportes este mes</span>
+                            <span class="font-semibold">42</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tasa de resolución</span>
+                            <span class="font-semibold">78%</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Zonas críticas identificadas</span>
+                            <span class="font-semibold">5</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Comunidades activas</span>
+                            <span class="font-semibold">18</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold eco-text-green mb-4 section-title">Acciones Prioritarias</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3 px-4">Zona</th>
+                                <th class="text-left py-3 px-4">Problema</th>
+                                <th class="text-left py-3 px-4">Nivel de Urgencia</th>
+                                <th class="text-left py-3 px-4">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">Chimbote, Perú</td>
+                                <td class="py-3 px-4">Calidad del aire peligrosa</td>
+                                <td class="py-3 px-4"><span class="bg-red-100 text-red-800 py-1 px-2 rounded-full text-xs">Alta</span></td>
+                                <td class="py-3 px-4"><button class="text-eco-blue hover:underline">Ver detalles</button></td>
+                            </tr>
+                            
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">Tlalnepantla, Edomex</td>
+                                <td class="py-3 px-4">Contaminación de agua</td>
+                                <td class="py-3 px-4"><span class="bg-red-100 text-red-800 py-1 px-2 rounded-full text-xs">Alta</span></td>
+                                <td class="py-3 px-4"><button class="text-eco-blue hover:underline">Ver detalles</button></td>
+                            </tr>
+                            
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">Naucalpan, Edomex</td>
+                                <td class="py-3 px-4">Acumulación de basura</td>
+                                <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-800 py-1 px-2 rounded-full text-xs">Media</span></td>
+                                <td class="py-3 px-4"><button class="text-eco-blue hover:underline">Ver detalles</button></td>
+                            </tr>
+                            
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4">Chimbote, Perú</td>
+                                <td class="py-3 px-4">Deforestación</td>
+                                <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-800 py-1 px-2 rounded-full text-xs">Media</span></td>
+                                <td class="py-3 px-4"><button class="text-eco-blue hover:underline">Ver detalles</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold eco-text-green mb-4">TERRAPOINT</h3>
+                    <p class="text-gray-400">Plataforma colaborativa para el monitoreo y solución de problemas ambientales.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#inicio" class="text-gray-400 hover:text-white transition-colors">Inicio</a></li>
+                        <li><a href="#reportar" class="text-gray-400 hover:text-white transition-colors">Reportar</a></li>
+                        <li><a href="#comunidad" class="text-gray-400 hover:text-white transition-colors">Comunidad</a></li>
+                        <li><a href="#ranking" class="text-gray-400 hover:text-white transition-colors">Ranking</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Recursos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Centro de Ayuda</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Guías de Uso</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Preguntas Frecuentes</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Política de Privacidad</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contacto</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-eco-green mr-2"></i>
+                            <span class="text-gray-400">info@terrapoint.org</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-eco-green mr-2"></i>
+                            <span class="text-gray-400">+52 55 1234 5678</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-eco-green mr-2"></i>
+                            <span class="text-gray-400">Ciudad de Chimbote</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2025 TERRAPOINT. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    <div class="floating-btn" id="report-fab">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" id="close-login">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold eco-text-green mb-6 text-center">Iniciar Sesión</h2>
+            
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                    <input type="email" class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                    <input type="password" class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-eco-green text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                        Iniciar Sesión
+                    </button>
+                </div>
+                
+                <p class="text-center text-sm text-gray-600">
+                    ¿No tienes cuenta? <a href="#" class="eco-text-blue hover:underline">Regístrate aquí</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Inicialización del mapa
+        function initMap() {
+            // Coordenadas centrales de la Ciudad de México
+            const map = L.map('map').setView([19.4326, -99.1332], 11);
+            
+            // Capa base de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Marcadores de ejemplo para reportes
+            const reports = [
+                { lat: 19.4326, lng: -99.1332, type: 'trash', title: 'Acumulación de basura', description: 'Basura acumulada en zona verde' },
+                { lat: 19.4350, lng: -99.1400, type: 'air', title: 'Calidad del aire pobre', description: 'Humo visible de fábricas' },
+                { lat: 19.4250, lng: -99.1250, type: 'water', title: 'Contaminación de agua', description: 'Desechos en canal de agua' },
+                { lat: 19.4290, lng: -99.1450, type: 'noise', title: 'Contaminación acústica', description: 'Ruido excesivo de construcción' },
+                { lat: 19.4380, lng: -99.1200, type: 'deforestation', title: 'Tala ilegal', description: 'Árboles cortados ilegalmente' }
+            ];
+            
+            // Iconos personalizados para diferentes tipos de reportes
+            const iconColors = {
+                trash: 'red',
+                air: 'orange',
+                water: 'blue',
+                noise: 'purple',
+                deforestation: 'green'
+            };
+            
+            // Añadir marcadores al mapa
+            reports.forEach(report => {
+                const marker = L.marker([report.lat, report.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="background-color: ${iconColors[report.type]}; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${report.type[0].toUpperCase()}</div>`,
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    })
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div class="p-2">
+                        <h4 class="font-semibold">${report.title}</h4>
+                        <p class="text-sm">${report.description}</p>
+                        <div class="mt-2 text-xs text-gray-600">Reportado hace 2 días</div>
+                    </div>
+                `);
+            });
+            
+            // Añadir capa de calor para contaminación del aire (simulada)
+            const heatPoints = [
+                [19.4326, -99.1332, 0.8], // [lat, lng, intensity]
+                [19.4350, -99.1400, 0.6],
+                [19.4250, -99.1250, 0.4],
+                [19.4380, -99.1200, 0.7]
+            ];
+            
+            // Simular capa de calor (en una implementación real, usaríamos L.heatLayer)
+            heatPoints.forEach(point => {
+                L.circle([point[0], point[1]], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: point[2] * 0.3,
+                    radius: 500
+                }).addTo(map).bindPopup('Zona de contaminación crítica del aire');
+            });
+        }
+        
+        // Inicializar gráficas
+        function initCharts() {
+            // Gráfica de impacto ambiental
+            const impactCtx = document.getElementById('impact-chart').getContext('2d');
+            new Chart(impactCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Reportes Resueltos',
+                        data: [12, 19, 15, 25, 22, 30],
+                        backgroundColor: '#2ecc71',
+                    }, {
+                        label: 'Nuevos Reportes',
+                        data: [18, 25, 22, 30, 27, 35],
+                        backgroundColor: '#3498db',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Progreso Mensual'
+                        }
+                    }
+                }
+            });
+            
+            // Gráfica de contaminación
+            const pollutionCtx = document.getElementById('pollution-chart').getContext('2d');
+            new Chart(pollutionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Basura', 'Aire', 'Agua', 'Ruido', 'Deforestación'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            '#e74c3c',
+                            '#f39c12',
+                            '#3498db',
+                            '#9b59b6',
+                            '#2ecc71'
+                        ],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tipos de Contaminación'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Manejo de la interfaz de usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar mapa y gráficas
+            initMap();
+            initCharts();
+            
+            // Manejar menú móvil
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+            
+            // Manejar dropdown de perfil
+            document.getElementById('profile-btn').addEventListener('click', function() {
+                document.getElementById('profile-dropdown').classList.toggle('hidden');
+            });
+            
+            // Cerrar dropdown al hacer clic fuera de él
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('#profile-btn') && !event.target.closest('#profile-dropdown')) {
+                    document.getElementById('profile-dropdown').classList.add('hidden');
+                }
+            });
+            
+            // Manejar modal de login
+            document.getElementById('login-btn').addEventListener('click', function() {
+                document.getElementById('login-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('close-login').addEventListener('click', function() {
+                document.getElementById('login-modal').style.display = 'none';
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', function(event) {
+                if (event.target === document.getElementById('login-modal')) {
+                    document.getElementById('login-modal').style.display = 'none';
+                }
+            });
+            
+            // Manejar FAB de reporte
+            document.getElementById('report-fab').addEventListener('click', function() {
+                document.getElementById('reportar').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Validación de formulario de reporte
+            document.getElementById('report-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Reporte enviado correctamente. Será verificado por nuestras autoridades.');
+                this.reset();
+            });
+            
+            // Simular notificaciones
+            setTimeout(function() {
+                document.getElementById('notification-indicator').classList.remove('hidden');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

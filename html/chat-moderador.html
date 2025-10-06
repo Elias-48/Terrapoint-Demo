@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Moderador | Terrapoint</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark moderador-theme">
+    <div class="container-xxl">
+      <a class="navbar-brand d-flex align-items-center gap-2 text-white" href="index.html">
+        <img src="../img/logo.png" alt="Logo Terrapoint" width="100" height="80" />
+        <span class="fw-bold">TERRAPOINT</span>
+      </a>
+      <!-- Botón hamburguesa -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#chatModNavbar" aria-controls="chatModNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menú colapsable -->
+      <div class="collapse navbar-collapse" id="chatModNavbar">
+        <div class="navbar-nav ms-auto align-items-lg-center gap-2">
+          <span class="nav-link text-white fw-semibold d-none d-lg-inline" data-i18n="mod.nav.greeting">Hola, Moderador</span>
+          <a class="nav-link text-white" href="index.html" data-i18n="mod.nav.logout">Salir</a>
+          <a href="moderador.html" class="btn btn-dark btn-sm ms-2">Panel</a>
+          <!-- Language dropdown with flags -->
+          <div class="ms-lg-3">
+            <div class="dropdown">
+              <button id="lang-dropdown-toggle" class="btn btn-light btn-sm d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img id="lang-dropdown-flag" src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                <span id="lang-dropdown-label">EN</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="en">
+                    <img src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                    <span>EN</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="es">
+                    <img src="../img/BanderaES.svg.png" alt="ES" width="18" height="12" class="me-2" />
+                    <span>ES</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Saludo destacado en móvil, fuera del encabezado -->
+  <div class="container d-block d-lg-none py-2 text-center">
+    <span class="fw-semibold fs-4" data-i18n="mod.nav.greeting">Hola, Moderador</span>
+  </div>
+
+  <main class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0" data-i18n="chat.title">Chat Moderador</h5>
+            <button id="openSearchBtn" class="btn btn-dark btn-sm" data-i18n="chat.search.open">Buscar usuario</button>
+          </div>
+          <div class="card-body p-0" style="height: 500px; display: flex; flex-direction: column;">
+            <!-- Buscador -->
+            <div id="searchWrap" class="p-3 border-bottom" style="display:none;">
+              <div class="input-group input-group-sm mb-2">
+                <span class="input-group-text">🔎</span>
+                <input id="searchInput" type="search" class="form-control" placeholder="Buscar usuario..." data-i18n="chat.search.placeholder" />
+              </div>
+              <button id="closeSearchBtn" class="btn btn-outline-secondary btn-sm mb-2 float-end" data-i18n="chat.search.close">Cerrar búsqueda</button>
+              <div id="searchResults" class="list-group mt-2"></div>
+              <span id="i18nNoResults" data-i18n="chat.no_results" hidden>Sin resultados</span>
+            </div>
+            <!-- Conversación -->
+            <div id="chatWrap" class="flex-fill d-flex flex-column" style="min-height:0;">
+              <div class="p-3 border-bottom">
+                <strong id="chatHeader" data-i18n="chat.header.placeholder">Selecciona un usuario</strong>
+                <small id="chatInfo" class="text-muted d-block"></small>
+              </div>
+              <div id="chatMessages" class="flex-grow-1 p-3" style="overflow:auto; background:#f8f9fa;"></div>
+              <div class="p-3 border-top">
+                <div class="input-group chat-input-group">
+                  <input id="chatInput" type="text" class="form-control" placeholder="Escribe un mensaje..." data-i18n="chat.input.placeholder" />
+                  <button id="chatSend" class="btn btn-gradient" type="button" data-i18n="chat.send">Enviar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    // Simple demo data
+    const users = [
+      { id: 'u1', name: 'Elías Rivera' },
+      { id: 'u2', name: 'María López' },
+      { id: 'u3', name: 'Carlos Gómez' }
+    ];
+    const chats = {};
+    let activeUserId = null;
+
+    // Elements
+    const openSearchBtn = document.getElementById('openSearchBtn');
+    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    const searchWrap = document.getElementById('searchWrap');
+    const chatWrap = document.getElementById('chatWrap');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const chatHeader = document.getElementById('chatHeader');
+    const chatInfo = document.getElementById('chatInfo');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+
+    // Show search
+    openSearchBtn.onclick = () => {
+      searchWrap.style.display = 'block';
+      chatWrap.style.display = 'none';
+      searchInput.value = '';
+      renderSearchResults('');
+      searchInput.focus();
+    };
+    // Close search
+    closeSearchBtn.onclick = () => {
+      searchWrap.style.display = 'none';
+      chatWrap.style.display = 'flex';
+    };
+    // Search input
+    searchInput.oninput = () => {
+      renderSearchResults(searchInput.value.trim());
+    };
+    function renderSearchResults(q) {
+      searchResults.innerHTML = '';
+      const filtered = users.filter(u => u.name.toLowerCase().includes(q.toLowerCase()));
+      if (filtered.length === 0) {
+        const noRes = document.getElementById('i18nNoResults');
+        const msg = noRes ? noRes.textContent : 'Sin resultados';
+        searchResults.innerHTML = '<div class="list-group-item text-muted small">' + msg + '</div>';
+        return;
+      }
+      filtered.forEach(u => {
+        const btn = document.createElement('button');
+        btn.className = 'list-group-item list-group-item-action';
+        btn.type = 'button';
+        btn.textContent = u.name;
+        btn.onclick = () => selectUser(u.id);
+        searchResults.appendChild(btn);
+      });
+    }
+    function selectUser(id) {
+      activeUserId = id;
+      searchWrap.style.display = 'none';
+      chatWrap.style.display = 'flex';
+      const user = users.find(u => u.id === id);
+      chatHeader.textContent = user ? user.name : 'Usuario';
+      chatInfo.textContent = '';
+      renderMessages();
+    }
+    function renderMessages() {
+      chatMessages.innerHTML = '';
+      const msgs = chats[activeUserId] || [];
+      if (!activeUserId) {
+        // Mostrar placeholder SOLO en español, con el texto en inglés como solicitaste
+        const lang = localStorage.getItem('preferred-language-moderator') || document.documentElement.lang || 'en';
+        if (lang === 'es') {
+          const empty = document.getElementById('i18nChatEmpty');
+          chatMessages.innerHTML = '<div class="text-center text-muted mt-5 chat-empty-msg">' + msg + '</div>';
+        }
+        return;
+      }
+      msgs.forEach(m => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex mb-2 ' + (m.from === 'mod' ? 'justify-content-end' : 'justify-content-start');
+        const bubble = document.createElement('div');
+        bubble.className = 'p-2 rounded ' + (m.from === 'mod' ? 'bg-success text-white' : 'bg-light');
+        bubble.style.maxWidth = '75%';
+        bubble.innerHTML = `<div>${m.text}</div><div class="small text-muted mt-1">${m.time}</div>`;
+        wrapper.appendChild(bubble);
+        chatMessages.appendChild(wrapper);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    function sendMessage() {
+      const txt = (chatInput.value || '').trim();
+      if (!txt || !activeUserId) return;
+      const now = new Date();
+      const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      chats[activeUserId] = chats[activeUserId] || [];
+      chats[activeUserId].push({ from: 'mod', text: txt, time });
+      chatInput.value = '';
+      renderMessages();
+    }
+    chatSend.onclick = sendMessage;
+    // Refrescar placeholder al cambiar el idioma
+    document.addEventListener('chat-i18n-changed', () => {
+      renderMessages();
+    });
+    // Inicializa
+    renderMessages();
+  </script>
+  <script src="../js-Idioma/ChatModeradorIdioma.js"></script>
+</html>

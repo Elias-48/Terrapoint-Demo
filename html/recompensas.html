@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERRAPOINT - Recompensas</title>
+    <meta name="description" content="Recompensas y niveles de TERRAPOINT: Ecoamigable, Colaborador, Guardián Verde y Héroe Ambiental.">
+    
+    <!-- Assets como index.html -->
+    <link rel="icon" type="image/png" href="../img/icon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+    :root{
+      --green:#2ECC71; /* Verde principal */
+      --blue:#2980B9; /* Azul principal */
+      --bg:#F8FAFC; /* Fondo suave */
+      --card:#FFFFFF; /* Fondo de tarjeta */
+      --muted:#6B7280; /* Texto secundario */
+      --danger:#DC2626; /* Color de peligro */
+      --soft-shadow: 0 6px 18px rgba(11,27,43,0.06);
+      --radius:12px;
+      --glass: rgba(255,255,255,0.7);
+      font-size:16px;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: 'Inter', sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--card) 100%);
+      color: #0B1B2B;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:0; /* quitar padding global que generaba bordes blancos */
+      /* Removed flex to avoid header stretching full height */
+      display:block;
+    }
+    /* Use Bootstrap's .container; avoid overriding it here */
+
+    /* Header */
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:20px;
+      flex-wrap: wrap; /* Para que el botón se ajuste en móvil */
+      gap: 16px;
+    }
+    .title{
+      display:flex;
+      gap:16px;
+      align-items:center;
+    }
+    .h1{
+      font-family: 'Montserrat', sans-serif;
+      font-size:28px; /* Aumentado para más impacto */
+      font-weight:700; /* Más negrita */
+      margin:0;
+      color: var(--blue); /* Color azul para el título principal */
+    }
+    .subtitle{
+      color:var(--muted);
+      font-size:16px; /* Aumentado para mejor lectura */
+      margin: 0 auto; /* centrar bloque */
+      max-width: 700px; /* Limitar ancho para legibilidad */
+      text-align: center; /* asegurar centrado del texto */
+    }
+
+    /* Sección "Acerca de las Recompensas" */
+    .about-rewards {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--soft-shadow);
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center; /* centrar textos principales */
+    }
+    .about-rewards h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--green);
+      padding-bottom: 8px;
+    }
+    .about-rewards h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--blue);
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    .about-rewards p, .about-rewards ul {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    /* centrar párrafos y mantener legibilidad */
+    .about-rewards p { max-width: 900px; margin-left: auto; margin-right: auto; }
+    /* Listas a la izquierda, ocupando ancho disponible */
+    .about-rewards ul { display: block; text-align: left; max-width: 900px; margin: 0 auto; }
+    .about-rewards ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    .about-rewards ul li {
+      margin-bottom: 5px;
+    }
+    .about-rewards strong {
+      color: #0B1B2B;
+    }
+
+    /* Grid de tarjetas */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:24px; /* Aumentado el gap */
+    }
+    @media (max-width:900px){ .grid{ grid-template-columns:1fr } }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--soft-shadow);
+      padding:24px; /* Aumentado el padding */
+      transition:transform .18s ease, box-shadow .18s ease;
+      position:relative;
+      overflow:hidden;
+      display: flex; /* Para usar flexbox en la tarjeta */
+      flex-direction: column;
+    }
+    .card:hover{ transform:translateY(-6px); box-shadow:0 14px 30px rgba(11,27,43,0.10); }
+
+    .level-head{
+      display:flex;
+      align-items:center;
+      gap:16px; /* Aumentado el gap */
+      margin-bottom:16px; /* Aumentado el margin */
+    }
+    .badge{
+      width:64px; /* Más grande */
+      height:64px; /* Más grande */
+      border-radius:16px; /* Más redondeado */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:white;
+      font-size:24px; /* Más grande */
+      box-shadow:0 6px 18px rgba(11,27,43,0.08);
+      position: relative; /* Para el icono */
+    }
+    /* Iconos en badges */
+    .badge::before {
+      position: absolute;
+      font-size: 32px; /* Tamaño del emoji */
+      line-height: 1;
+    }
+    .badge.eco{ background: linear-gradient(135deg,var(--green), #34c77a); }
+    .badge.eco::before { content: "🌱"; }
+    .badge.col{ background: linear-gradient(135deg,#23a6d5,#0f6fc0); }
+    .badge.col::before { content: "🤝"; }
+    .badge.guard{ background: linear-gradient(135deg,#6b9f3b,#3f7a32); }
+    .badge.guard::before { content: "🛡️"; }
+    .badge.hero{ background: linear-gradient(135deg,#2b6bbd,#0f3e86); }
+    .badge.hero::before { content: "🌍"; } /* Cambiado a icono global */
+
+    .level-title{ font-family: 'Montserrat', sans-serif; font-weight:700; font-size:22px; color: var(--blue); } /* Más grande y negrita */
+    .level-sub{ color:var(--muted); font-size:15px; margin-top:6px; } /* Más grande */
+
+    .requirements, .rewards{
+      margin-top:16px; /* Aumentado el margin */
+      font-size:15px; /* Más grande */
+      color:#0B1B2B;
+    }
+    .small{ color:var(--muted); font-size:14px; margin-top:8px; line-height: 1.5; } /* Más grande y espaciado */
+
+    /* barra de progreso */
+    .progress-wrap{ margin-top:20px; display:flex; align-items:center; gap:12px; } /* Aumentado el margin */
+    .progress{
+      flex:1;
+      height:14px; /* Más alto */
+      background:#e8eef6;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--green), #7be38c);
+      transition: width 900ms cubic-bezier(.2,.9,.3,1);
+    }
+    .progress-label{ min-width:65px; text-align:right; font-weight:600; font-size:14px; color:var(--muted); } /* Más grande */
+
+    /* lista de recompensas */
+    .rewards-list{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; } /* Aumentado el margin */
+    .reward-pill{
+      background: #f3fbf6;
+      color:var(--green);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:14px; /* Más grande */
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.02);
+    }
+    .reward-pill .icon {
+      font-size: 16px; /* Tamaño del icono */
+      line-height: 1;
+    }
+
+    /* CTA */
+    .cta-row{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:16px; } /* Aumentado el margin y gap */
+    .btn-primary{
+      background:var(--green);
+      color:white;
+      padding:12px 20px; /* Más grande */
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      transition:transform .12s ease, box-shadow .12s ease;
+      font-family: 'Inter', sans-serif;
+      flex-shrink: 0; /* Evita que se encoja */
+    }
+    .btn-primary:hover{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(30,155,74,0.14) }
+
+    .btn-link{
+      background:transparent;
+      color:var(--blue);
+      border:0;
+      font-weight:600;
+      cursor:pointer;
+      font-family: 'Inter', sans-serif;
+      flex-grow: 1; /* Permite que ocupe espacio */
+      text-align: right;
+    }
+
+    /* Tooltip simple */
+    .tooltip{
+      position:relative;
+      display:inline-block;
+    }
+    .tooltip .tiptext{
+      visibility:hidden;
+      width:240px; /* Más ancho */
+      background:#0B1B2B;
+      color:#fff;
+      text-align:left;
+      border-radius:6px;
+      padding:12px; /* Más padding */
+      position:absolute;
+      z-index:10;
+      bottom:125%;
+      left:50%;
+      transform:translateX(-50%);
+      opacity:0;
+      transition:opacity .18s ease, visibility .18s ease;
+      font-size:14px; /* Más grande */
+      line-height: 1.5;
+    }
+    .tooltip:hover .tiptext{ visibility:visible; opacity:1; }
+    .tooltip .tiptext::after { /* Flecha del tooltip */
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #0B1B2B transparent transparent transparent;
+    }
+
+    /* desbloqueado badge */
+    .unlocked{
+      position:absolute;
+      right:16px; /* Ajustado */
+      top:16px; /* Ajustado */
+      background: linear-gradient(90deg,#fff,#f1fff4);
+      padding:8px 12px; /* Ajustado */
+      border-radius:999px;
+      font-weight:700;
+      color:var(--green);
+      font-size:14px; /* Más grande */
+      border:1px solid rgba(30,155,74,0.12);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .unlocked .icon {
+      font-size: 16px;
+    }
+
+    /* footer */
+    .foot{
+      margin-top:32px; /* Más margin */
+      font-size:14px; /* Más grande */
+      color:var(--muted);
+      text-align:center;
+    }
+
+    /* CTA Global al final */
+    .global-cta-section {
+      background: linear-gradient(135deg, var(--blue), #0F5FA0); /* Gradiente para el CTA */
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      border-radius: var(--radius);
+      margin-top: 40px;
+      box-shadow: var(--soft-shadow);
+    }
+    .global-cta-section h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    .global-cta-section p {
+      font-size: 18px;
+      line-height: 1.5;
+      max-width: 700px;
+      margin: 0 auto 25px;
+    }
+    .global-cta-section .btn-primary {
+      background: var(--green);
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 30px;
+      box-shadow: 0 8px 20px rgba(46,204,113,0.4);
+    }
+    .global-cta-section .btn-primary:hover {
+      background: #27ae60;
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(39,174,96,0.6);
+    }
+
+    
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      /* Root cause: this body padding centraba header/footer y dejaba bordes */
+      body { padding: 0; }
+      .h1 { font-size: 24px; }
+      .subtitle { font-size: 14px; }
+      .about-rewards h2 { font-size: 20px; }
+      .about-rewards h3 { font-size: 16px; }
+      .about-rewards p, .about-rewards ul { font-size: 14px; }
+      .grid { gap: 16px; }
+      .card { padding: 18px; }
+      .level-title { font-size: 18px; }
+      .level-sub { font-size: 13px; }
+      .requirements, .rewards { font-size: 14px; }
+      .small { font-size: 13px; }
+      .badge { width: 56px; height: 56px; font-size: 20px; border-radius: 12px; }
+      .badge::before { font-size: 28px; }
+      .reward-pill { font-size: 13px; padding: 6px 10px; }
+      .reward-pill .icon { font-size: 14px; }
+      .progress-label { font-size: 13px; }
+      .btn-primary { padding: 10px 16px; font-size: 14px; }
+      .btn-link { font-size: 14px; }
+      .unlocked { font-size: 13px; padding: 6px 10px; }
+      .global-cta-section h2 { font-size: 24px; }
+      .global-cta-section p { font-size: 16px; }
+      .global-cta-section .btn-primary { padding: 12px 25px; font-size: 16px; }
+    }
+
+    /* Mobile-only: make header and footer flush to screen edges on this page */
+    @media (max-width: 576px) {
+      header .navbar { padding-left: 0 !important; padding-right: 0 !important; }
+      header .container-xxl { padding-left: 0 !important; padding-right: 0 !important; }
+      .footer-section { padding-left: 0 !important; padding-right: 0 !important; }
+      .footer-section .row { --bs-gutter-x: 0; }
+    }
+
+    /* Modal simple (sin dependencias) */
+    .modal-mask{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .modal-mask.open{ display:flex; }
+    .modal-card{ background:#fff; border-radius:12px; width:min(600px, 92vw); box-shadow: var(--soft-shadow); overflow:hidden; }
+    .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #eaeaea; }
+    .modal-title{ font-weight:700; font-family:'Montserrat',sans-serif; color:#0B1B2B; }
+    .modal-body{ padding:16px; color:#0B1B2B; line-height:1.6; }
+    .modal-close{ background:transparent; border:0; font-size:20px; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR (copiada de index.html con enlaces al index) -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-xxl">
+                <!-- Logo + texto -->
+                <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                    <img src="../img/logo.png" alt="Logo Terrapoint" width="100" height="80" class="d-inline-block align-text-top" />
+                    <span class="fw-bold">TERRAPOINT</span>
+                </a>
+
+                <!-- Botón hamburguesa -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Enlaces -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="navbar-nav ms-auto align-items-lg-center">
+                        <a class="nav-link" href="index.html" data-i18n="rewards.nav.home">Inicio</a>
+                        <a class="nav-link" href="index.html#mapa" data-i18n="rewards.nav.map">Mapa</a>
+                        <a class="nav-link" href="index.html#datos" data-i18n="rewards.nav.data">Datos</a>
+                        <a class="nav-link" href="index.html#comunidad" data-i18n="rewards.nav.community">Comunidad</a>
+                        <a class="btn btn-gradient ms-lg-3 mt-2 mt-lg-0" href="index.html" data-i18n="rewards.nav.back_home">Volver al inicio</a>
+                        <div class="ms-lg-3 mt-2 mt-lg-0">
+                          <div class="dropdown">
+                            <button id="lang-dropdown-toggle" class="btn btn-light btn-sm d-flex align-items-center dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <img id="lang-dropdown-flag" src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                              <span id="lang-dropdown-label">EN</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="en">
+                                  <img src="../img/BanderaEN.svg.png" alt="EN" width="18" height="12" class="me-2" />
+                                  <span>EN</span>
+                                </a>
+                              </li>
+                              <li>
+                                <a href="#" class="dropdown-item d-flex align-items-center lang-item" data-lang="es">
+                                  <img src="../img/BanderaES.svg.png" alt="ES" width="18" height="12" class="me-2" />
+                                  <span>ES</span>
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        <div class="text-center mb-4">
+            <h1 class="h1" data-i18n="rewards.header.title">Tus Recompensas en TERRAPOINT</h1>
+            <p class="subtitle" data-i18n="rewards.header.subtitle">Cada reporte cuenta. Sube de nivel, gana reconocimiento y ayuda a tu comunidad.</p>
+            
+        </div>
+
+    <!-- Nueva sección: Acerca de las Recompensas -->
+    <section id="about-rewards-section" class="about-rewards" aria-label="Información sobre el sistema de recompensas de TERRAPOINT" data-i18n="rewards.about.aria" data-i18n-attr="aria-label">
+      <h2 data-i18n="rewards.about.title">Acerca del Sistema de Recompensas</h2>
+
+      <h3 data-i18n="rewards.about.h3.1">1. Propósito del sistema de recompensas</h3>
+      <p data-i18n="rewards.about.p1">El sistema de recompensas busca motivar y fidelizar a los ciudadanos en el uso de TERRAPOINT, transformando acciones cotidianas (como reportar basura o un foco de contaminación) en logros visibles y reconocidos. No solo refuerza la participación individual, sino que también crea un sentido de comunidad, donde cada persona ve que sus aportes generan resultados concretos.</p>
+
+      <h3 data-i18n="rewards.about.h3.2">2. Tipos de recompensas</h3>
+      <p data-i18n="rewards.about.p2">Las recompensas se dividen en tres categorías principales:</p>
+      <ul>
+        <li>
+          <strong data-i18n="rewards.about.catA">a) Recompensas Digitales:</strong>
+          <ul>
+            <li><span class="icon">🏅</span> <span data-i18n="rewards.about.catA.li1">Insignias: gráficas llamativas y coleccionables para cada logro alcanzado.</span></li>
+            <li><span class="icon">📜</span> <span data-i18n="rewards.about.catA.li2">Certificados digitales: emitidos por la plataforma y, en alianza, por las municipalidades o autoridades ambientales.</span></li>
+            <li><span class="icon">🏆</span> <span data-i18n="rewards.about.catA.li3">Reconocimiento en rankings comunitarios: destacar a los usuarios más activos en la app.</span></li>
+          </ul>
+        </li>
+        <li>
+          <strong data-i18n="rewards.about.catB">b) Recompensas Materiales (en alianza con municipalidades y empresas):</strong>
+          <ul>
+            <li><span class="icon">🌳</span> <span data-i18n="rewards.about.catB.li1">Plantones o semillas: para sembrar en la comunidad.</span></li>
+            <li><span class="icon">🛍️</span> <span data-i18n="rewards.about.catB.li2">Kits ambientales: bolsas reutilizables, polos, guantes, botellas eco.</span></li>
+            <li><span class="icon">🎟️</span> <span data-i18n="rewards.about.catB.li3">Entradas o invitaciones: a talleres, ferias y actividades verdes.</span></li>
+          </ul>
+        </li>
+        <li>
+          <strong data-i18n="rewards.about.catC">c) Recompensas Sociales/Comunitarias:</strong>
+          <ul>
+            <li><span class="icon">📣</span> <span data-i18n="rewards.about.catC.li1">Mención pública: en campañas locales o en la web de la municipalidad.</span></li>
+            <li><span class="icon">🌟</span> <span data-i18n="rewards.about.catC.li2">Rol de liderazgo comunitario: en acciones colaborativas.</span></li>
+            <li><span class="icon">💡</span> <span data-i18n="rewards.about.catC.li3">Oportunidad de proponer proyectos ambientales: que reciban apoyo local.</span></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 data-i18n="rewards.about.h3.3">3. Mecánica de avance</h3>
+      <ul>
+        <li data-i18n="rewards.about.h3.3.li1">Progresiva y transparente: cada acción suma puntos visibles en la app.</li>
+        <li data-i18n="rewards.about.h3.3.li2">Gamificación real: desbloqueo de insignias, barra de progreso, retos semanales y rankings.</li>
+        <li data-i18n="rewards.about.h3.3.li3">Verificación comunitaria: reportes validados por otros usuarios o moderadores para evitar abusos.</li>
+      </ul>
+
+      <h3 data-i18n="rewards.about.h3.4">4. Impacto esperado</h3>
+      <ul>
+        <li data-i18n="rewards.about.h3.4.li1">Motivar la acción sostenida: los usuarios no solo reportan una vez, sino que se mantienen activos gracias al progreso visible.</li>
+        <li data-i18n="rewards.about.h3.4.li2">Generar reconocimiento tangible: cada persona ve que su aporte es valorado por la plataforma y por la comunidad.</li>
+        <li data-i18n="rewards.about.h3.4.li3">Conectar con las autoridades: la municipalidad se convierte en aliado, entregando recompensas materiales y validando certificados oficiales.</li>
+      </ul>
+    </section>
+
+    <!-- Grid niveles -->
+    <section class="grid" aria-label="Niveles de recompensas">
+      <!-- Nivel 1: Ecoamigable -->
+      <article class="card" data-level="1">
+        <div class="level-head">
+          <div class="badge eco" aria-hidden="true"></div>
+          <div>
+            <div class="level-title" data-i18n="rewards.l1.title">Ecoamigable</div>
+            <div class="level-sub" data-i18n="rewards.l1.subtitle">Primer paso hacia la acción ambiental.</div>
+          </div>
+        </div>
+
+        <div class="requirements"><strong data-i18n="rewards.req">Requisito:</strong>
+          <div class="small" data-i18n="rewards.l1.req">Realizar tu primer reporte en la plataforma.</div>
+        </div>
+
+        <div class="rewards">
+          <strong data-i18n="rewards.rewards">Recompensas:</strong>
+          <div class="rewards-list">
+            <div class="reward-pill"><span class="icon">🏅</span> <span data-i18n="rewards.l1.r1">Insignia "Ecoamigable"</span></div>
+            <div class="reward-pill tooltip"><span class="icon">📜</span> <span data-i18n="rewards.l1.r2">Certificado de participación</span>
+              <span class="tiptext" data-i18n="rewards.l1.tip2">Constancia digital descargable que valida tu inicio en TERRAPOINT.</span>
+            </div>
+            <div class="reward-pill"><span class="icon">💡</span> <span data-i18n="rewards.l1.r3">Acceso a tips ecológicos</span></div>
+          </div>
+        </div>
+
+        
+
+        <div class="cta-row">
+          <button class="btn-primary" onclick="openReport()" data-i18n="rewards.l1.cta1">Reportar ahora</button>
+          <button class="btn-link" onclick="showDetails(1)" data-i18n="rewards.details">Ver detalles</button>
+        </div>
+      </article>
+
+      <!-- Nivel 2: Colaborador Ambiental -->
+      <article class="card" data-level="2">
+        <div class="level-head">
+          <div class="badge col"></div>
+          <div>
+            <div class="level-title" data-i18n="rewards.l2.title">Colaborador Ambiental</div>
+            <div class="level-sub" data-i18n="rewards.l2.subtitle">Únete a tu comunidad y participa activamente.</div>
+          </div>
+        </div>
+
+        <div class="requirements"><strong data-i18n="rewards.req">Requisito:</strong>
+          <div class="small" data-i18n="rewards.l2.req">Unirte a una comunidad y realizar 3 reportes adicionales.</div>
+        </div>
+
+        <div class="rewards">
+          <strong data-i18n="rewards.rewards">Recompensas:</strong>
+          <div class="rewards-list">
+            <div class="reward-pill"><span class="icon">🏅</span> <span data-i18n="rewards.l2.r1">Insignia "Colaborador"</span></div>
+            <div class="reward-pill tooltip"><span class="icon">🤝</span> <span data-i18n="rewards.l2.r2">Participación en jornadas comunitarias</span>
+              <span class="tiptext" data-i18n="rewards.l2.tip2">Invitaciones a limpiezas y eventos locales organizados por la comunidad.</span>
+            </div>
+            <div class="reward-pill"><span class="icon">🌳</span> <span data-i18n="rewards.l2.r3">Entrega de plantón/semilla</span></div>
+          </div>
+        </div>
+
+        
+
+        <div class="cta-row">
+          <button class="btn-primary" onclick="joinCommunity()" data-i18n="rewards.l2.cta1">Unirme a comunidad</button>
+          <button class="btn-link" onclick="showDetails(2)" data-i18n="rewards.details">Ver detalles</button>
+        </div>
+      </article>
+
+      <!-- Nivel 3: Guardián Verde -->
+      <article class="card" data-level="3">
+        <div class="level-head">
+          <div class="badge guard"></div>
+          <div>
+            <div class="level-title" data-i18n="rewards.l3.title">Guardián Verde</div>
+            <div class="level-sub" data-i18n="rewards.l3.subtitle">Tu compromiso ya protege a tu entorno.</div>
+          </div>
+        </div>
+
+        <div class="requirements"><strong data-i18n="rewards.req">Requisito:</strong>
+          <div class="small" data-i18n="rewards.l3.req">Alcanzar 10 reportes verificados y participar en al menos una jornada de voluntariado.</div>
+        </div>
+
+        <div class="rewards">
+          <strong data-i18n="rewards.rewards">Recompensas:</strong>
+          <div class="rewards-list">
+            <div class="reward-pill"><span class="icon">🏅</span> <span data-i18n="rewards.l3.r1">Insignia "Guardián Verde"</span></div>
+            <div class="reward-pill tooltip"><span class="icon">📜</span> <span data-i18n="rewards.l3.r2">Certificado municipal</span>
+              <span class="tiptext" data-i18n="rewards.l3.tip2">Certificado oficial avalado por la municipalidad local.</span>
+            </div>
+            <div class="reward-pill"><span class="icon">🛍️</span> <span data-i18n="rewards.l3.r3">Kit ambiental</span></div>
+          </div>
+        </div>
+
+        
+
+        <div class="cta-row">
+          <button class="btn-primary" onclick="joinEvent()" data-i18n="rewards.l3.cta1">Participar en campaña</button>
+          <button class="btn-link" onclick="showDetails(3)" data-i18n="rewards.details">Ver detalles</button>
+        </div>
+      </article>
+
+      <!-- Nivel 4: Héroe Ambiental -->
+      <article class="card" data-level="4">
+        <div class="level-head">
+          <div class="badge hero"></div>
+          <div>
+            <div class="level-title" data-i18n="rewards.l4.title">Héroe Ambiental</div>
+            <div class="level-sub" data-i18n="rewards.l4.subtitle">Lidera acciones y mantiene impacto.</div>
+          </div>
+        </div>
+
+        <div class="requirements"><strong data-i18n="rewards.req">Requisito:</strong>
+          <div class="small" data-i18n="rewards.l4.req">Liderar una acción comunitaria, 25 reportes verificados y 1 mes de actividad sostenida.</div>
+        </div>
+
+        <div class="rewards">
+          <strong data-i18n="rewards.rewards">Recompensas:</strong>
+          <div class="rewards-list">
+            <div class="reward-pill"><span class="icon">🏅</span> <span data-i18n="rewards.l4.r1">Insignia "Héroe Ambiental"</span></div>
+            <div class="reward-pill tooltip"><span class="icon">🏆</span> <span data-i18n="rewards.l4.r2">Reconocimiento oficial</span>
+              <span class="tiptext" data-i18n="rewards.l4.tip2">Mención pública en eventos o medios de comunicación locales.</span>
+            </div>
+            <div class="reward-pill"><span class="icon">🌳</span> <span data-i18n="rewards.l4.r3">Plantones adicionales</span></div>
+            <div class="reward-pill tooltip"><span class="icon">✍️</span> <span data-i18n="rewards.l4.r4">Invitación a diseñar campañas</span>
+              <span class="tiptext" data-i18n="rewards.l4.tip4">Oportunidad de colaborar en el diseño de campañas ambientales locales.</span>
+            </div>
+          </div>
+        </div>
+
+        
+
+        <div class="cta-row">
+          <button class="btn-primary" onclick="leadAction()" data-i18n="rewards.l4.cta1">Liderar acción</button>
+          <button class="btn-link" onclick="showDetails(4)" data-i18n="rewards.details">Ver detalles</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA Global al final -->
+    <section class="global-cta-section" aria-label="Llamado a la acción para unirse a TERRAPOINT">
+      <h2 data-i18n="rewards.cta.title">¡Tu impacto ambiental comienza hoy!</h2>
+      <p data-i18n="rewards.cta.text">Cada acción, por pequeña que sea, contribuye a un futuro más verde. Únete a TERRAPOINT y empieza a ganar recompensas mientras proteges nuestro planeta.</p>
+      <button class="btn-primary" type="button" onclick="openReport()" data-i18n="rewards.cta.button">Unirme Ahora y Reportar</button>
+    </section>
+
+    <p id="help" class="foot" data-i18n="rewards.foot">Las recompensas combinan reconocimiento digital (insignias, certificados) con incentivos reales (plantones, kits y menciones). Avanza subiendo tu nivel para recibir beneficios crecientes y participar en acciones con impacto tangible.</p>
+    </main>
+
+	<!-- FOOTER -->
+	<footer class="footer-section text-center">
+    <div class="row align-items-center">
+
+      <!-- Columna izquierda: Imagen -->
+      <div class="col-lg-3 text-center mb-4 mb-lg-0">
+        <img src="../img/footer.png" alt="Astronauta" class="footer-img">
+      </div>
+
+      <!-- Columna central: Acceso rápido -->
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h3 class="footer-form-title text-center" data-i18n="footer.form.title">Contacta con Terrapoint</h3>
+        <div class="d-flex justify-content-center gap-2 mt-2">
+          <a class="btn btn-gradient" href="iniciar-sesion.html" data-i18n="nav.login">Iniciar sesión</a>
+          <a class="btn btn-orange" href="registrarse.html" data-i18n="nav.signup">Registrarse</a>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="footer-social mt-4">
+          <a href="#">FB</a>
+          <a href="#">TW</a>
+          <a href="#">IG</a>
+          <a href="#">LI</a>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Texto CTA -->
+      <div class="col-lg-3 text-center">
+        <h3 class="footer-cta" data-i18n="footer.cta">Vuélvete un aliado ambiental...</h3>
+      </div>
+
+    <!-- Créditos -->
+    <div class="footer-bottom mt-5">
+      <p data-i18n="footer.credits"> 2025 Terrapoint — Salvemos el planeta con datos precisos.</p>
+    </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+    // CTA: enviar a registro
+    function openReport(){ window.location.href = 'index.html#mapa'; }
+    function joinCommunity(){ window.location.href = 'index.html#comunidad'; }
+    function joinEvent(){ window.location.href = 'index.html#comunidad'; }
+    function leadAction(){ window.location.href = 'index.html#comunidad'; }
+
+    // Modal Detalles
+    function openDetailsModal(title, html){
+      const mask = document.getElementById('detailsModal');
+      const t = document.getElementById('detailsTitle');
+      const b = document.getElementById('detailsBody');
+      if (t) t.textContent = title || 'Detalles';
+      if (b) b.innerHTML = html || '';
+      mask?.classList.add('open');
+    }
+    function closeDetailsModal(){ document.getElementById('detailsModal')?.classList.remove('open'); }
+    function showDetails(level){
+      const lang = (localStorage.getItem('preferred-language-rewards') || 'en');
+      const es = {
+        1: {
+          title: 'Nivel 1: Ecoamigable',
+          html: '<p><strong>Requisito:</strong> Realizar tu primer reporte.</p>'+
+                '<p><strong>Recompensas:</strong></p>'+
+                '<ul><li>Insignia "Ecoamigable"</li><li>Certificado de participación</li><li>Acceso a tips ecológicos</li></ul>'
+        },
+        2: {
+          title: 'Nivel 2: Colaborador Ambiental',
+          html: '<p><strong>Requisito:</strong> Unirte a una comunidad y realizar 3 reportes adicionales.</p>'+
+                '<p><strong>Recompensas:</strong></p>'+
+                '<ul><li>Insignia "Colaborador"</li><li>Participación en jornadas comunitarias</li><li>Entrega de plantón/semilla</li></ul>'
+        },
+        3: {
+          title: 'Nivel 3: Guardián Verde',
+          html: '<p><strong>Requisito:</strong> 10 reportes verificados y 1 voluntariado.</p>'+
+                '<p><strong>Recompensas:</strong></p>'+
+                '<ul><li>Insignia "Guardián Verde"</li><li>Certificado municipal</li><li>Kit ambiental</li></ul>'
+        },
+        4: {
+          title: 'Nivel 4: Héroe Ambiental',
+          html: '<p><strong>Requisito:</strong> Liderar una acción comunitaria, 25 reportes verificados y 1 mes activo.</p>'+
+                '<p><strong>Recompensas:</strong></p>'+
+                '<ul><li>Insignia "Héroe Ambiental"</li><li>Reconocimiento oficial</li><li>Plantones adicionales</li><li>Invitación a diseñar campañas</li></ul>'
+        }
+      };
+      const en = {
+        1: {
+          title: 'Level 1: Eco-friendly',
+          html: '<p><strong>Requirement:</strong> Make your first report.</p>'+
+                '<p><strong>Rewards:</strong></p>'+
+                '<ul><li>“Eco-friendly” badge</li><li>Participation certificate</li><li>Access to eco tips</li></ul>'
+        },
+        2: {
+          title: 'Level 2: Environmental Contributor',
+          html: '<p><strong>Requirement:</strong> Join a community and make 3 additional reports.</p>'+
+                '<p><strong>Rewards:</strong></p>'+
+                '<ul><li>“Contributor” badge</li><li>Participation in community events</li><li>Delivery of sapling/seed</li></ul>'
+        },
+        3: {
+          title: 'Level 3: Green Guardian',
+          html: '<p><strong>Requirement:</strong> 10 verified reports and 1 volunteering event.</p>'+
+                '<p><strong>Rewards:</strong></p>'+
+                '<ul><li>“Green Guardian” badge</li><li>Municipal certificate</li><li>Environmental kit</li></ul>'
+        },
+        4: {
+          title: 'Level 4: Environmental Hero',
+          html: '<p><strong>Requirement:</strong> Lead a community action, 25 verified reports and 1 month active.</p>'+
+                '<p><strong>Rewards:</strong></p>'+
+                '<ul><li>“Environmental Hero” badge</li><li>Official recognition</li><li>Additional saplings</li><li>Invitation to design campaigns</li></ul>'
+        }
+      };
+      const dict = (lang === 'es') ? es : en;
+      const d = dict[level];
+      if (!d) return openDetailsModal(lang === 'es' ? 'Detalles' : 'Details', lang === 'es' ? '<p>Detalles no disponibles.</p>' : '<p>Details not available.</p>');
+      openDetailsModal(d.title, d.html);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      // Animación de la barra de progreso al cargar
+      document.querySelectorAll('.progress-bar').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%'; // Reset para la animación
+        setTimeout(() => {
+          bar.style.width = width; // Animar al valor original
+        }, 100);
+      });
+      // Cerrar modal al hacer click fuera del contenido
+      const mask = document.getElementById('detailsModal');
+      mask?.addEventListener('click', (e) => { if (e.target === mask) closeDetailsModal(); });
+    });
+  </script>
+
+  <!-- Modal Detalles -->
+  <div id="detailsModal" class="modal-mask" aria-hidden="true" role="dialog" aria-labelledby="detailsTitle">
+    <div class="modal-card" role="document">
+      <div class="modal-head">
+        <div class="modal-title" id="detailsTitle">Detalles</div>
+        <button class="modal-close" aria-label="Cerrar" onclick="closeDetailsModal()">×</button>
+      </div>
+      <div class="modal-body" id="detailsBody"></div>
+    </div>
+  </div>
+</body>
+<script src="../js-Idioma/RewardsIdioma.js"></script>
+</html>
